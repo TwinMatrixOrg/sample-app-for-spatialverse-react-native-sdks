@@ -2,10 +2,12 @@
  * MapExperienceLayout
  *
  * Sticky search + category chips stay on top in both map and list modes.
- * ListView fills the area below that chrome; map stays mounted underneath.
+ * Two ListView instances share the same place data:
+ * - horizontal carousel on map (`open={!listOpen}`)
+ * - vertical browse overlay (`open={listOpen}`)
  */
 
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   Dimensions,
   Pressable,
@@ -19,9 +21,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   MapExperience,
   ListView,
-  Sheet,
   SearchResultsList,
-  PlaceSummaryCard,
   CategoryChips,
   GpsControlButton,
   ListingCard,
@@ -43,6 +43,7 @@ setCustomTheme('light', {
 });
 
 const SEARCH_DEBOUNCE_MS = 280;
+const CAROUSEL_HEIGHT = 140;
 
 export default function MapExperienceLayout() {
   const theme = useAppTheme();
@@ -150,6 +151,22 @@ export default function MapExperienceLayout() {
   // chromeInsets.top = safe.top + regionHeight, so subtract safe.top for ListView topOffset.
   const stickyTopOffset = Math.max(chromeInsets.top - safeInsets.top, 0);
 
+  const renderRowCard = ({item}: {item: PlaceItem}) => (
+    <ListingCard place={item} layout="row" onPress={onSelectPlace} />
+  );
+
+  const renderCarouselCard = ({item}: {item: PlaceItem}) => (
+    <ListingCard
+      place={item}
+      layout="card"
+      onPress={onSelectPlace}
+      onFavoritePress={() => {
+        console.log('favorite', item.id);
+      }}
+      favorited={selectedPlace?.id === item.id}
+    />
+  );
+
   return (
     <MapExperience.Root
       themeMode="light"
@@ -184,7 +201,6 @@ export default function MapExperienceLayout() {
       </MapExperience.Canvas>
 
       <MapExperience.Chrome>
-        {/* Sticky in both map and list modes */}
         <MapExperience.TopRegion>
           <View
             style={[
@@ -254,8 +270,26 @@ export default function MapExperienceLayout() {
           </MapExperience.ControlsRegion>
         ) : null}
 
+        {/* Map carousel — open when not in full list mode */}
+        <ListView.Root
+          open={!listOpen}
+          orientation="horizontal"
+          showBackdrop={false}
+          height={CAROUSEL_HEIGHT}
+          bottomOffset={8}
+        >
+          <ListView.Body
+            data={listPlaces}
+            keyExtractor={item => item.id}
+            estimatedItemSize={280}
+            renderItem={renderCarouselCard}
+          />
+        </ListView.Root>
+
+        {/* Full browse list — open when list mode is on */}
         <ListView.Root
           open={listOpen}
+          orientation="vertical"
           onClose={() => setListOpen(false)}
           showBackdrop={false}
           topOffset={stickyTopOffset}
@@ -264,9 +298,7 @@ export default function MapExperienceLayout() {
             data={listPlaces}
             keyExtractor={item => item.id}
             estimatedItemSize={120}
-            renderItem={({item}) => (
-              <ListingCard place={item} onPress={onSelectPlace} />
-            )}
+            renderItem={renderRowCard}
           />
           <ListView.AlphabetRail
             letters={ALPHABET}
@@ -283,32 +315,6 @@ export default function MapExperienceLayout() {
             </Text>
           </ListView.FloatingAction>
         </ListView.Root>
-
-        {!listOpen ? (
-          <MapExperience.BottomRegion>
-            <Sheet.Root
-              index={selectedPlace ? 0 : -1}
-              snapPoints={['28%', '50%']}
-            >
-              <Sheet.Handle />
-              <Sheet.Body>
-                {selectedPlace ? (
-                  <PlaceSummaryCard
-                    place={selectedPlace}
-                    onDirections={() => {
-                      console.log('start directions for', selectedPlace.id);
-                    }}
-                    onClose={() => setSelectedPlace(null)}
-                  />
-                ) : (
-                  <Text style={{color: theme.text.muted, paddingVertical: 8}}>
-                    Tap the map or search to select a place.
-                  </Text>
-                )}
-              </Sheet.Body>
-            </Sheet.Root>
-          </MapExperience.BottomRegion>
-        ) : null}
       </MapExperience.Chrome>
     </MapExperience.Root>
   );

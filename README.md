@@ -12,8 +12,10 @@ This is the RN counterpart to `sample-app-for-spatialverse-web-sdks`.
 - `MapExperience` shell with MetaAtlas always mounted in `Canvas`
 - Top bar + search + `CategoryChips` + `SearchResultsList`
 - `GpsControlButton` (presentation state sample)
-- Bottom `Sheet` with `PlaceSummaryCard` + mock `RoutePreviewCard`
-- `ListView` overlay with `ListingCard` (does not unmount the map)
+- Sticky search + `CategoryChips` in both map and list modes
+- Horizontal `ListView` carousel on map (`open={!listOpen}`, `ListingCard layout="card"`)
+- Vertical `ListView` browse overlay (`open={listOpen}`, `ListingCard layout="row"`)
+- List ↔ Map FAB toggle; map stays mounted under both overlays
 - Adapter: MetaAtlas feature → `PlaceItem`
 
 ## Prerequisites
