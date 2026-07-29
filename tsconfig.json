@@ -4,11 +4,11 @@
     "strict": false,
     "baseUrl": ".",
     "paths": {
-      "@twinmatrix/rn-ui-sdk": ["../twinmatrix-ui-sdk/src"],
-      "@twinmatrix/rn-ui-sdk/*": ["../twinmatrix-ui-sdk/src/*"]
+      "@twinmatrix/rn-ui-sdk": ["./sdk/ui-sdk/src/index.ts"],
+      "@twinmatrix/rn-ui-sdk/*": ["./sdk/ui-sdk/src/*"]
     },
     "skipLibCheck": true
   },
-  "include": ["App.tsx", "index.js", "src/**/*"],
-  "exclude": ["node_modules", "sdk", "android", "ios"]
+  "include": ["App.tsx", "index.js", "src/**/*", "sdk/ui-sdk/src/**/*"],
+  "exclude": ["node_modules", "sdk/map-sdk", "sdk/ui-sdk/lib", "android", "ios"]
 }

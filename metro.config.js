@@ -3,13 +3,13 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
 /**
  * Metro configuration
- * - Watches local MetaAtlas RN SDK (`./sdk`)
- * - Watches sibling `@twinmatrix/rn-ui-sdk` source/build
+ * - Watches local MetaAtlas RN SDK (`./sdk/map-sdk`)
+ * - Watches local `@twinmatrix/rn-ui-sdk` (`./sdk/ui-sdk`)
  * - Forces host app React / RN peers (UI SDK may ship different copies in node_modules)
  */
 const projectRoot = __dirname;
-const mapSdkRoot = path.resolve(projectRoot, 'sdk');
-const uiSdkRoot = path.resolve(projectRoot, '../twinmatrix-ui-sdk');
+const mapSdkRoot = path.resolve(projectRoot, 'sdk/map-sdk');
+const uiSdkRoot = path.resolve(projectRoot, 'sdk/ui-sdk');
 const appNodeModules = path.resolve(projectRoot, 'node_modules');
 
 const peerSingletons = [
@@ -42,6 +42,8 @@ const blockList = peerSingletons.map(
     ),
 );
 
+const uiSdkEntry = path.resolve(uiSdkRoot, 'src/index.ts');
+
 const config = {
   watchFolders: [mapSdkRoot, uiSdkRoot],
   resolver: {
@@ -52,6 +54,16 @@ const config = {
       path.resolve(mapSdkRoot, 'node_modules'),
     ],
     extraNodeModules,
+    /**
+     * Resolve the UI SDK to TypeScript source (no build/lib required).
+     * Keeps app imports as `@twinmatrix/rn-ui-sdk` while Metro + HMR watch `sdk/ui-sdk/src`.
+     */
+    resolveRequest: (context, moduleName, platform) => {
+      if (moduleName === '@twinmatrix/rn-ui-sdk') {
+        return {filePath: uiSdkEntry, type: 'sourceFile'};
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    },
   },
 };
 

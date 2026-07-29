@@ -2,9 +2,8 @@
  * MapExperienceLayout
  *
  * Sticky search + category chips stay on top in both map and list modes.
- * Two ListView instances share the same place data:
- * - horizontal carousel on map (`open={!listOpen}`)
- * - vertical browse overlay (`open={listOpen}`)
+ * Place data and search come from MapBridge (wired to MetaAtlasSDK).
+ * CategoryChips remain host-driven.
  */
 
 import React, {useCallback, useRef, useState} from 'react';
@@ -15,7 +14,6 @@ import {
   Text,
   TextInput,
   View,
-  unstable_batchedUpdates,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
@@ -24,82 +22,50 @@ import {
   SearchResultsList,
   CategoryChips,
   GpsControlButton,
+  FocusControl,
   ListingCard,
+  PlaceSummaryCard,
   setCustomTheme,
   useAppTheme,
+  useMapBridge,
   type ChromeInsets,
   type CategoryItem,
-  type GpsControlState,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
-import {MetaAtlasSDK} from '../../../sdk/src/meta-atlas-sdk-rn/meta-atlas-sdk-rn';
+import {MetaAtlasSDK} from '../../../sdk/map-sdk/src/meta-atlas-sdk-rn/meta-atlas-sdk-rn';
 import appConfig from '../../config/app.config';
-import {toPlaceItem, toPlaceItems} from '../../adapters/placeAdapter';
-import {ALPHABET, MOCK_CATEGORIES, MOCK_PLACES} from '../../data/mockPlaces';
+import {ALPHABET, MOCK_CATEGORIES} from '../../data/mockPlaces';
 
 setCustomTheme('light', {
   accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
   surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
 });
 
-const SEARCH_DEBOUNCE_MS = 280;
 const CAROUSEL_HEIGHT = 140;
+const CAROUSEL_BOTTOM_OFFSET = 16;
 
-export default function MapExperienceLayout() {
+function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
   const mapRef = useRef<any>(null);
+  const {
+    registerMap,
+    setSearchReady,
+    searchReady,
+    searchQuery,
+    setSearchQuery,
+    places,
+    selected,
+    select,
+    selectFromMapPress,
+  } = useMapBridge();
 
   const [mapHeight] = useState(Dimensions.get('window').height);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<PlaceItem[]>([]);
-  const [selectedPlace, setSelectedPlace] = useState<PlaceItem | null>(null);
   const [categories, setCategories] = useState<CategoryItem[]>(MOCK_CATEGORIES);
   const [listOpen, setListOpen] = useState(false);
-  const [gpsState, setGpsState] = useState<GpsControlState>('off');
-  const [searchReady, setSearchReady] = useState(false);
-  const [chromeInsets, setChromeInsets] = useState<ChromeInsets>({
-    top: 0,
-    bottom: 0,
-  });
-  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const listPlaces = searchResults.length > 0 ? searchResults : MOCK_PLACES;
   const showSearchResults = searchQuery.trim().length > 0 && !listOpen;
-
-  const runSearch = useCallback(
-    (query: string) => {
-      const sdk = mapRef.current;
-      if (!sdk || !searchReady || !query.trim()) {
-        setSearchResults([]);
-        return;
-      }
-      try {
-        sdk.getMapObjectsByName(
-          query.trim(),
-          true,
-          'Relevance',
-          (features: any[]) => {
-            unstable_batchedUpdates(() => {
-              setSearchResults(toPlaceItems(features ?? []));
-            });
-          },
-        );
-      } catch (err) {
-        console.warn('Search failed', err);
-        setSearchResults([]);
-      }
-    },
-    [searchReady],
-  );
-
-  const onSearchChange = (text: string) => {
-    setSearchQuery(text);
-    if (searchTimeout.current) {
-      clearTimeout(searchTimeout.current);
-    }
-    searchTimeout.current = setTimeout(() => runSearch(text), SEARCH_DEBOUNCE_MS);
-  };
+  const stickyTopOffset = Math.max(chromeInsets.top - safeInsets.top, 0);
 
   const onCategoryPress = (item: CategoryItem) => {
     setCategories(prev =>
@@ -107,49 +73,21 @@ export default function MapExperienceLayout() {
     );
   };
 
-  const onSelectPlace = (place: PlaceItem) => {
-    setSelectedPlace(place);
-    setListOpen(false);
-    const sdk = mapRef.current;
-    if (sdk && place.coordinates) {
-      try {
-        sdk.flyTo({center: place.coordinates});
-      } catch (err) {
-        console.warn('flyTo failed', err);
-      }
-    }
-  };
+  const onSelectPlace = useCallback(
+    (place: PlaceItem) => {
+      select(place);
+      setListOpen(false);
+    },
+    [select],
+  );
 
-  const onMapPress = (_data: any) => {
-    const sdk = mapRef.current;
-    if (!sdk) return;
-    try {
-      const feature = sdk.getLastClickedFeature?.();
-      if (feature?.name) {
-        unstable_batchedUpdates(() => {
-          setSelectedPlace(toPlaceItem(feature));
-        });
-        const center = sdk.getMidPointOfFeature?.(feature);
-        if (center) {
-          sdk.flyTo?.({center});
-        }
-      }
-    } catch (err) {
-      console.warn('map press handler failed', err);
-    }
-  };
-
-  const onGpsPress = () => {
-    setGpsState(prev => {
-      if (prev === 'off') return 'on';
-      if (prev === 'on') return 'following';
-      return 'off';
-    });
-  };
-
-  // TopRegion onLayout already includes safe-area padding inside the sticky header.
-  // chromeInsets.top = safe.top + regionHeight, so subtract safe.top for ListView topOffset.
-  const stickyTopOffset = Math.max(chromeInsets.top - safeInsets.top, 0);
+  const bindMapRef = useCallback(
+    (instance: any) => {
+      mapRef.current = instance;
+      registerMap(instance);
+    },
+    [registerMap],
+  );
 
   const renderRowCard = ({item}: {item: PlaceItem}) => (
     <ListingCard place={item} layout="row" onPress={onSelectPlace} />
@@ -163,22 +101,19 @@ export default function MapExperienceLayout() {
       onFavoritePress={() => {
         console.log('favorite', item.id);
       }}
-      favorited={selectedPlace?.id === item.id}
+      favorited={selected?.id === item.id}
     />
   );
 
   return (
-    <MapExperience.Root
-      themeMode="light"
-      onChromeInsetsChange={setChromeInsets}
-    >
+    <>
       <MapExperience.Canvas>
         <MetaAtlasSDK
-          ref={mapRef}
+          ref={bindMapRef}
           tileserverRoleName={appConfig.metaAtlas.role}
           accessToken={appConfig.metaAtlas.accessToken}
           secretKey={appConfig.metaAtlas.secretKey}
-          onPress={onMapPress}
+          onPress={() => selectFromMapPress()}
           onLoad={() => {
             console.log('map loaded');
           }}
@@ -214,7 +149,7 @@ export default function MapExperienceLayout() {
           >
             <TextInput
               value={searchQuery}
-              onChangeText={onSearchChange}
+              onChangeText={setSearchQuery}
               placeholder="Find your perfect experience"
               placeholderTextColor={theme.text.muted}
               style={[
@@ -229,9 +164,6 @@ export default function MapExperienceLayout() {
             <CategoryChips items={categories} onItemPress={onCategoryPress} />
             {showSearchResults ? (
               <SearchResultsList
-                items={searchResults}
-                onItemPress={onSelectPlace}
-                empty={searchResults.length === 0}
                 emptyMessage={
                   searchReady
                     ? 'No locations were found.'
@@ -246,11 +178,8 @@ export default function MapExperienceLayout() {
           <MapExperience.ControlsRegion
             style={{top: Math.max(chromeInsets.top + 12, 120)}}
           >
-            <GpsControlButton
-              state={gpsState}
-              onPress={onGpsPress}
-              layout="stack"
-            />
+            <FocusControl />
+            <GpsControlButton layout="stack" />
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Open list view"
@@ -270,23 +199,33 @@ export default function MapExperienceLayout() {
           </MapExperience.ControlsRegion>
         ) : null}
 
-        {/* Map carousel — open when not in full list mode */}
+        {!listOpen && selected ? (
+          <MapExperience.OverlayRegion
+            style={{bottom: CAROUSEL_HEIGHT + CAROUSEL_BOTTOM_OFFSET + 24}}
+          >
+            <PlaceSummaryCard
+              place={selected}
+              onClose={() => select(null)}
+              onDirections={() => select(selected)}
+            />
+          </MapExperience.OverlayRegion>
+        ) : null}
+
         <ListView.Root
           open={!listOpen}
           orientation="horizontal"
           showBackdrop={false}
           height={CAROUSEL_HEIGHT}
-          bottomOffset={8}
+          bottomOffset={CAROUSEL_BOTTOM_OFFSET}
         >
           <ListView.Body
-            data={listPlaces}
+            data={places}
             keyExtractor={item => item.id}
             estimatedItemSize={280}
             renderItem={renderCarouselCard}
           />
         </ListView.Root>
 
-        {/* Full browse list — open when list mode is on */}
         <ListView.Root
           open={listOpen}
           orientation="vertical"
@@ -295,7 +234,7 @@ export default function MapExperienceLayout() {
           topOffset={stickyTopOffset}
         >
           <ListView.Body
-            data={listPlaces}
+            data={places}
             keyExtractor={item => item.id}
             estimatedItemSize={120}
             renderItem={renderRowCard}
@@ -316,6 +255,22 @@ export default function MapExperienceLayout() {
           </ListView.FloatingAction>
         </ListView.Root>
       </MapExperience.Chrome>
+    </>
+  );
+}
+
+export default function MapExperienceLayout() {
+  const [chromeInsets, setChromeInsets] = useState<ChromeInsets>({
+    top: 0,
+    bottom: 0,
+  });
+
+  return (
+    <MapExperience.Root
+      themeMode="light"
+      onChromeInsetsChange={setChromeInsets}
+    >
+      <MapChrome chromeInsets={chromeInsets} />
     </MapExperience.Root>
   );
 }
