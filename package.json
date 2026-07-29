@@ -4,10 +4,10 @@
   "private": true,
   "description": "Sample React Native app demonstrating TwinMatrix RN UI SDK + MetaAtlas map SDK",
   "scripts": {
-    "android": "bash scripts/with-android-env.sh bash scripts/run-android.sh",
+    "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start": "react-native start --host 0.0.0.0",
+    "start": "react-native start",
     "test": "jest",
     "typecheck": "tsc --noEmit"
   },
@@ -16,7 +16,7 @@
     "@maplibre/maplibre-react-native": "11.0.0-alpha.25",
     "@react-native-community/netinfo": "^11.4.1",
     "@shopify/flash-list": "^1.7.3",
-    "@twinmatrix/rn-ui-sdk": "file:../twinmatrix-ui-sdk",
+    "@twinmatrix/rn-ui-sdk": "file:sdk/ui-sdk",
     "axios": "1.13.2",
     "geojson": "^0.5.0",
     "geojson-path-finder": "2.0.1",

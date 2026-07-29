@@ -1,6 +1,10 @@
 import type {CategoryItem, PlaceItem} from '@twinmatrix/rn-ui-sdk';
 
-/** Fallback demo places when search has not returned results yet. */
+/**
+ * Demo PlaceItem catalog for custom-data / offline demos.
+ * Default map browse lists now come from MapBridge (`getAllMapObjects`).
+ * Use `setCustomPlaces(MOCK_PLACES)` when you want a full host override.
+ */
 export const MOCK_PLACES: PlaceItem[] = [
   {
     id: 'mock-1',
