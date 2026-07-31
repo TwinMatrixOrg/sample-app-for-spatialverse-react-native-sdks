@@ -3,9 +3,10 @@ const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
 /**
  * Metro configuration
- * - Watches local MetaAtlas RN SDK (`./sdk/map-sdk`)
- * - Watches local `@twinmatrix/rn-ui-sdk` (`./sdk/ui-sdk`)
- * - Forces host app React / RN peers (UI SDK may ship different copies in node_modules)
+ * - Watches local SDKs (`./sdk/map-sdk`, `./sdk/ui-sdk`)
+ * - UI SDK resolves to TypeScript source for HMR
+ * - Map SDK resolves to TypeScript source
+ * - Forces host app React / RN peers
  */
 const projectRoot = __dirname;
 const mapSdkRoot = path.resolve(projectRoot, 'sdk/map-sdk');
@@ -29,7 +30,7 @@ const escapeForRegex = value =>
 
 const extraNodeModules = {
   '@twinmatrix/rn-ui-sdk': uiSdkRoot,
-  'meta-atlas-sdk': mapSdkRoot,
+  '@twinmatrix/spatialverse-sdk-rn': mapSdkRoot,
 };
 for (const name of peerSingletons) {
   extraNodeModules[name] = path.resolve(appNodeModules, name);
@@ -55,15 +56,11 @@ const config = {
       path.resolve(mapSdkRoot, 'node_modules'),
     ],
     extraNodeModules,
-    /**
-     * Resolve the UI SDK to TypeScript source (no build/lib required).
-     * Keeps app imports as `@twinmatrix/rn-ui-sdk` while Metro + HMR watch `sdk/ui-sdk/src`.
-     */
     resolveRequest: (context, moduleName, platform) => {
       if (moduleName === '@twinmatrix/rn-ui-sdk') {
         return {filePath: uiSdkEntry, type: 'sourceFile'};
       }
-      if (moduleName === 'meta-atlas-sdk') {
+      if (moduleName === '@twinmatrix/spatialverse-sdk-rn') {
         return {
           filePath: path.resolve(mapSdkRoot, 'src/index.ts'),
           type: 'sourceFile',

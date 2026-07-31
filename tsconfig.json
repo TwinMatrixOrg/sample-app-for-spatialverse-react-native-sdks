@@ -5,10 +5,11 @@
     "baseUrl": ".",
     "paths": {
       "@twinmatrix/rn-ui-sdk": ["./sdk/ui-sdk/src/index.ts"],
-      "@twinmatrix/rn-ui-sdk/*": ["./sdk/ui-sdk/src/*"]
+      "@twinmatrix/rn-ui-sdk/*": ["./sdk/ui-sdk/src/*"],
+      "@twinmatrix/spatialverse-sdk-rn": ["./sdk/map-sdk/typings/index.d.ts"]
     },
     "skipLibCheck": true
   },
   "include": ["App.tsx", "index.js", "src/**/*", "sdk/ui-sdk/src/**/*"],
-  "exclude": ["node_modules", "sdk/map-sdk", "sdk/ui-sdk/lib", "android", "ios"]
+  "exclude": ["node_modules", "sdk/map-sdk/src", "sdk/ui-sdk/lib", "android", "ios"]
 }
