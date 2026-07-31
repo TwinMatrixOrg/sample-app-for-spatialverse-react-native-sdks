@@ -2,19 +2,12 @@
  * MapExperienceLayout
  *
  * Sticky search + category chips stay on top in both map and list modes.
- * Place data and search come from MapBridge (wired to MetaAtlasSDK).
+ * Place data and search come from MapBridge (Canvas mounts MetaAtlas internally).
  * CategoryChips remain host-driven.
  */
 
-import React, {useCallback, useRef, useState} from 'react';
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   MapExperience,
@@ -32,7 +25,6 @@ import {
   type CategoryItem,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
-import {MetaAtlasSDK} from '../../../sdk/map-sdk/src/meta-atlas-sdk-rn/meta-atlas-sdk-rn';
 import appConfig from '../../config/app.config';
 import {ALPHABET, MOCK_CATEGORIES} from '../../data/mockPlaces';
 
@@ -47,20 +39,9 @@ const CAROUSEL_BOTTOM_OFFSET = 16;
 function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
-  const mapRef = useRef<any>(null);
-  const {
-    registerMap,
-    setSearchReady,
-    searchReady,
-    searchQuery,
-    setSearchQuery,
-    places,
-    selected,
-    select,
-    selectFromMapPress,
-  } = useMapBridge();
+  const {searchReady, searchQuery, setSearchQuery, places, selected, select} =
+    useMapBridge();
 
-  const [mapHeight] = useState(Dimensions.get('window').height);
   const [categories, setCategories] = useState<CategoryItem[]>(MOCK_CATEGORIES);
   const [listOpen, setListOpen] = useState(false);
 
@@ -81,14 +62,6 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
     [select],
   );
 
-  const bindMapRef = useCallback(
-    (instance: any) => {
-      mapRef.current = instance;
-      registerMap(instance);
-    },
-    [registerMap],
-  );
-
   const renderRowCard = ({item}: {item: PlaceItem}) => (
     <ListingCard place={item} layout="row" onPress={onSelectPlace} />
   );
@@ -107,33 +80,17 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
 
   return (
     <>
-      <MapExperience.Canvas>
-        <MetaAtlasSDK
-          ref={bindMapRef}
-          tileserverRoleName={appConfig.metaAtlas.role}
-          accessToken={appConfig.metaAtlas.accessToken}
-          secretKey={appConfig.metaAtlas.secretKey}
-          onPress={() => selectFromMapPress()}
-          onLoad={() => {
-            console.log('map loaded');
-          }}
-          onLoadFail={(message: string) => {
-            console.warn('map load failed', message);
-          }}
-          onRoutingStatusUpdate={(loaded: boolean) => {
-            console.log('routing ready:', loaded);
-          }}
-          onSearchStatusUpdate={(loaded: boolean) => {
-            setSearchReady(Boolean(loaded));
-            console.log('search ready:', loaded);
-          }}
-          onOfflineMapsStatusUpdate={() => {}}
-          onNetworkModeUpdate={() => {}}
-          onMoveEnd={() => {}}
-          maxMapHeight={mapHeight}
-          isFullHeight
-        />
-      </MapExperience.Canvas>
+      <MapExperience.Canvas
+        tileserverRoleName={appConfig.metaAtlas.role}
+        accessToken={appConfig.metaAtlas.accessToken}
+        secretKey={appConfig.metaAtlas.secretKey}
+        onLoad={() => {
+          console.log('map loaded');
+        }}
+        onLoadFail={(message: string) => {
+          console.warn('map load failed', message);
+        }}
+      />
 
       <MapExperience.Chrome>
         <MapExperience.TopRegion>

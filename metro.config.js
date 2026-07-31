@@ -29,6 +29,7 @@ const escapeForRegex = value =>
 
 const extraNodeModules = {
   '@twinmatrix/rn-ui-sdk': uiSdkRoot,
+  'meta-atlas-sdk': mapSdkRoot,
 };
 for (const name of peerSingletons) {
   extraNodeModules[name] = path.resolve(appNodeModules, name);
@@ -61,6 +62,12 @@ const config = {
     resolveRequest: (context, moduleName, platform) => {
       if (moduleName === '@twinmatrix/rn-ui-sdk') {
         return {filePath: uiSdkEntry, type: 'sourceFile'};
+      }
+      if (moduleName === 'meta-atlas-sdk') {
+        return {
+          filePath: path.resolve(mapSdkRoot, 'src/index.ts'),
+          type: 'sourceFile',
+        };
       }
       return context.resolveRequest(context, moduleName, platform);
     },
