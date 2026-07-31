@@ -2,6 +2,7 @@
  * MapExperienceLayout
  *
  * Sticky search + category chips stay on top in both map and list modes.
+ * Chrome insets / safe area are owned by MapLayout inside MapExperience.Root.
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
@@ -18,7 +19,6 @@ import {
   setCustomTheme,
   useAppTheme,
   useMapBridge,
-  type ChromeInsets,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
 import appConfig from '../../config/app.config';
@@ -32,14 +32,12 @@ setCustomTheme('light', {
 const CAROUSEL_HEIGHT = 140;
 const CAROUSEL_BOTTOM_OFFSET = 16;
 
-function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
+function MapChrome() {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
   const {selected, select, onPlaceSelect, onPlaceDeselect} = useMapBridge();
 
   const [listOpen, setListOpen] = useState(false);
-
-  const stickyTopOffset = Math.max(chromeInsets.top - safeInsets.top, 0);
 
   useEffect(() => {
     const offSelect = onPlaceSelect(place => {
@@ -102,9 +100,7 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
         </MapExperience.TopRegion>
 
         {!listOpen ? (
-          <MapExperience.ControlsRegion
-            style={{top: Math.max(chromeInsets.top + 12, 120)}}
-          >
+          <MapExperience.ControlsRegion>
             <FocusControl />
             <GpsControlButton layout="stack" />
             <Pressable
@@ -127,9 +123,7 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
         ) : null}
 
         {!listOpen && selected ? (
-          <MapExperience.OverlayRegion
-            style={{bottom: CAROUSEL_HEIGHT + CAROUSEL_BOTTOM_OFFSET + 24}}
-          >
+          <MapExperience.OverlayRegion>
             {/* Close always clears selection via MapBridge.select(null) */}
             <PlaceSummaryCard
               place={selected}
@@ -151,7 +145,6 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
 
         <ListView.Browse
           open={listOpen}
-          topOffset={stickyTopOffset}
           onClose={() => setListOpen(false)}
           onItemPress={onSelectPlace}
           alphabetLetters={ALPHABET}
@@ -165,17 +158,9 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
 }
 
 export default function MapExperienceLayout() {
-  const [chromeInsets, setChromeInsets] = useState<ChromeInsets>({
-    top: 0,
-    bottom: 0,
-  });
-
   return (
-    <MapExperience.Root
-      themeMode="light"
-      onChromeInsetsChange={setChromeInsets}
-    >
-      <MapChrome chromeInsets={chromeInsets} />
+    <MapExperience.Root themeMode="light">
+      <MapChrome />
     </MapExperience.Root>
   );
 }
