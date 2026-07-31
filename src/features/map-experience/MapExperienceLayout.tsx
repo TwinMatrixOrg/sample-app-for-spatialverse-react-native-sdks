@@ -3,6 +3,7 @@
  *
  * Sticky search + category chips stay on top in both map and list modes.
  * Chrome insets / safe area are owned by MapLayout inside MapExperience.Root.
+ * Carousel height / bottomOffset are SDK-dynamic (measure + theme) unless overridden.
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
@@ -28,9 +29,6 @@ setCustomTheme('light', {
   accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
   surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
 });
-
-const CAROUSEL_HEIGHT = 140;
-const CAROUSEL_BOTTOM_OFFSET = 16;
 
 function MapChrome() {
   const theme = useAppTheme();
@@ -133,14 +131,11 @@ function MapChrome() {
         ) : null}
 
         <ListView.Carousel
-          open={!listOpen}
-          height={CAROUSEL_HEIGHT}
-          bottomOffset={CAROUSEL_BOTTOM_OFFSET}
+          open={!listOpen && !selected}
           onItemPress={onSelectPlace}
-          onFavoritePress={place => {
-            console.log('favorite', place.id);
+          onFavoritePress={(place, favorited) => {
+            console.log('favorite', place.id, favorited);
           }}
-          isFavorited={place => selected?.id === place.id}
         />
 
         <ListView.Browse

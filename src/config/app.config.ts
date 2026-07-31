@@ -15,9 +15,9 @@ const appConfig: AppConfig = {
   metaAtlas: {
     // Demo credentials (from rn-u sample) — replace for your environment
     accessToken:
-      '3c84fe0ae26083db52072126554c3b190ca199843a409f36514abca740474c26',
-    secretKey: '7911y683-z093-yc17-z0x3-y045x76x',
-    role: 'changipublic',
+      'a69f469d1ee1560faac3536dedfe81be5b7c7b55b875d0bddee9feca5e89316a',
+    secretKey: 'z17074cx-z69y-c23b-14z4-223893yz',
+    role: 'rws-tic',
   },
 };
 
