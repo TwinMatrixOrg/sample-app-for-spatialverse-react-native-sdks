@@ -4,7 +4,7 @@
  * Sticky search + category chips stay on top in both map and list modes.
  */
 
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
@@ -35,11 +35,24 @@ const CAROUSEL_BOTTOM_OFFSET = 16;
 function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
-  const {selected, select} = useMapBridge();
+  const {selected, select, onPlaceSelect, onPlaceDeselect} = useMapBridge();
 
   const [listOpen, setListOpen] = useState(false);
 
   const stickyTopOffset = Math.max(chromeInsets.top - safeInsets.top, 0);
+
+  useEffect(() => {
+    const offSelect = onPlaceSelect(place => {
+      console.log('place selected', place.id);
+    });
+    const offDeselect = onPlaceDeselect(() => {
+      console.log('place deselected');
+    });
+    return () => {
+      offSelect();
+      offDeselect();
+    };
+  }, [onPlaceSelect, onPlaceDeselect]);
 
   // Run custom logic on place select here.
   // Providing onItemPress fully replaces the SDK default (MapBridge.select).
@@ -117,9 +130,9 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
           <MapExperience.OverlayRegion
             style={{bottom: CAROUSEL_HEIGHT + CAROUSEL_BOTTOM_OFFSET + 24}}
           >
+            {/* Close always clears selection via MapBridge.select(null) */}
             <PlaceSummaryCard
               place={selected}
-              onClose={() => select(null)}
               onDirections={() => select(selected)}
             />
           </MapExperience.OverlayRegion>
