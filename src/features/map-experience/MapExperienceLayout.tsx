@@ -2,31 +2,27 @@
  * MapExperienceLayout
  *
  * Sticky search + category chips stay on top in both map and list modes.
- * Place data and search come from MapBridge (Canvas mounts MetaAtlas internally).
- * CategoryChips remain host-driven.
  */
 
 import React, {useCallback, useState} from 'react';
-import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   MapExperience,
   ListView,
-  SearchResultsList,
+  SearchBar,
   CategoryChips,
   GpsControlButton,
   FocusControl,
-  ListingCard,
   PlaceSummaryCard,
   setCustomTheme,
   useAppTheme,
   useMapBridge,
   type ChromeInsets,
-  type CategoryItem,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
 import appConfig from '../../config/app.config';
-import {ALPHABET, MOCK_CATEGORIES} from '../../data/mockPlaces';
+import {ALPHABET} from '../../data/mockPlaces';
 
 setCustomTheme('light', {
   accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
@@ -39,43 +35,20 @@ const CAROUSEL_BOTTOM_OFFSET = 16;
 function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
-  const {searchReady, searchQuery, setSearchQuery, places, selected, select} =
-    useMapBridge();
+  const {selected, select} = useMapBridge();
 
-  const [categories, setCategories] = useState<CategoryItem[]>(MOCK_CATEGORIES);
   const [listOpen, setListOpen] = useState(false);
 
-  const showSearchResults = searchQuery.trim().length > 0 && !listOpen;
   const stickyTopOffset = Math.max(chromeInsets.top - safeInsets.top, 0);
 
-  const onCategoryPress = (item: CategoryItem) => {
-    setCategories(prev =>
-      prev.map(c => ({...c, selected: c.id === item.id})),
-    );
-  };
-
+  // Run custom logic on place select here.
+  // Providing onItemPress fully replaces the SDK default (MapBridge.select).
   const onSelectPlace = useCallback(
     (place: PlaceItem) => {
       select(place);
       setListOpen(false);
     },
     [select],
-  );
-
-  const renderRowCard = ({item}: {item: PlaceItem}) => (
-    <ListingCard place={item} layout="row" onPress={onSelectPlace} />
-  );
-
-  const renderCarouselCard = ({item}: {item: PlaceItem}) => (
-    <ListingCard
-      place={item}
-      layout="card"
-      onPress={onSelectPlace}
-      onFavoritePress={() => {
-        console.log('favorite', item.id);
-      }}
-      favorited={selected?.id === item.id}
-    />
   );
 
   return (
@@ -104,30 +77,14 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
               },
             ]}
           >
-            <TextInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder="Find your perfect experience"
-              placeholderTextColor={theme.text.muted}
-              style={[
-                styles.searchInput,
-                {
-                  backgroundColor: theme.surface.control,
-                  color: theme.text.primary,
-                  borderColor: theme.border.subtle,
-                },
-              ]}
+            <SearchBar
+              showResults={!listOpen}
+              resultsProps={{
+                onItemPress: onSelectPlace,
+              }}
             />
-            <CategoryChips items={categories} onItemPress={onCategoryPress} />
-            {showSearchResults ? (
-              <SearchResultsList
-                emptyMessage={
-                  searchReady
-                    ? 'No locations were found.'
-                    : 'Search is still loading…'
-                }
-              />
-            ) : null}
+            {/* items/onItemPress omitted → PlaceCatalog what-taxonomies */}
+            <CategoryChips />
           </View>
         </MapExperience.TopRegion>
 
@@ -168,49 +125,27 @@ function MapChrome({chromeInsets}: {chromeInsets: ChromeInsets}) {
           </MapExperience.OverlayRegion>
         ) : null}
 
-        <ListView.Root
+        <ListView.Carousel
           open={!listOpen}
-          orientation="horizontal"
-          showBackdrop={false}
           height={CAROUSEL_HEIGHT}
           bottomOffset={CAROUSEL_BOTTOM_OFFSET}
-        >
-          <ListView.Body
-            data={places}
-            keyExtractor={item => item.id}
-            estimatedItemSize={280}
-            renderItem={renderCarouselCard}
-          />
-        </ListView.Root>
+          onItemPress={onSelectPlace}
+          onFavoritePress={place => {
+            console.log('favorite', place.id);
+          }}
+          isFavorited={place => selected?.id === place.id}
+        />
 
-        <ListView.Root
+        <ListView.Browse
           open={listOpen}
-          orientation="vertical"
-          onClose={() => setListOpen(false)}
-          showBackdrop={false}
           topOffset={stickyTopOffset}
-        >
-          <ListView.Body
-            data={places}
-            keyExtractor={item => item.id}
-            estimatedItemSize={120}
-            renderItem={renderRowCard}
-          />
-          <ListView.AlphabetRail
-            letters={ALPHABET}
-            onLetterPress={letter => {
-              console.log('jump to', letter);
-            }}
-          />
-          <ListView.FloatingAction
-            onPress={() => setListOpen(false)}
-            accessibilityLabel="Show map"
-          >
-            <Text style={{fontWeight: '700', color: theme.text.primary}}>
-              Map
-            </Text>
-          </ListView.FloatingAction>
-        </ListView.Root>
+          onClose={() => setListOpen(false)}
+          onItemPress={onSelectPlace}
+          alphabetLetters={ALPHABET}
+          onLetterPress={letter => {
+            console.log('jump to', letter);
+          }}
+        />
       </MapExperience.Chrome>
     </>
   );
@@ -238,13 +173,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     gap: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  searchInput: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
   },
   listToggle: {
     width: 48,
