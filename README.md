@@ -3,7 +3,7 @@
 Reference React Native host for:
 
 - **`@twinmatrix/rn-ui-sdk`** — map experience layout, sheets, list overlay, widgets, theme
-- **MetaAtlas RN map SDK** — map engine (vendored under `./sdk/map-sdk`)
+- **`@twinmatrix/spatialverse-sdk-rn`** — map engine
 
 This is the RN counterpart to `sample-app-for-spatialverse-web-sdks`.
 
@@ -23,31 +23,14 @@ This is the RN counterpart to `sample-app-for-spatialverse-web-sdks`.
 
 - Node.js 18+
 - Android Studio / Xcode (for device or emulator)
-- Local SDKs under `./sdk` (map + UI)
 - JDK 17 at `~/.local/jdk-17` (or set `JAVA_HOME`). `npm run android` loads this via `scripts/with-android-env.sh`.
 - Windows Android SDK at `C:\Users\hamza\AppData\Local\Android\Sdk` (WSL path used automatically)
 
 ## Install
 
-Use **npm** for the host app (and UI SDK). Use **yarn** for the map SDK — it relies on peer dependencies.
-
 ```bash
-# 1) Install this sample (npm)
 npm install
-
-# 2) Install + build UI SDK (npm)
-cd sdk/ui-sdk && npm install && npm run build && cd ../..
-
-# 3) Install MetaAtlas map SDK deps (yarn only — peer deps)
-cd sdk/map-sdk && yarn install && cd ../..
 ```
-
-### Local SDKs (`./sdk`)
-
-- `sdk/map-sdk` — MetaAtlas React Native map SDK (install with `yarn`)
-- `sdk/ui-sdk` — `@twinmatrix/rn-ui-sdk` (`react-native-sandbox-1.0.0` branch)
-
-Metro watches both folders and resolves their `node_modules`.
 
 Update credentials in [`src/config/app.config.ts`](src/config/app.config.ts).
 
@@ -76,11 +59,6 @@ If the emulator can’t load JS, ensure Metro is up and run:
 adb reverse tcp:8081 tcp:8081
 ```
 
-### WSL notes
-
-- JDK: `~/.local/jdk-17` (set by `scripts/with-android-env.sh`)
-- Android SDK (Linux, for NDK/CMake): `~/Android/Sdk`
-- Emulator / `adb`: Windows SDK under `/mnt/c/Users/hamza/AppData/Local/Android/Sdk`
 ## Project layout
 
 ```text
@@ -90,9 +68,6 @@ src/
   adapters/placeAdapter.ts
   data/mockPlaces.ts
   features/map-experience/MapExperienceLayout.tsx
-sdk/
-  map-sdk/                    # MetaAtlas RN map SDK
-  ui-sdk/                     # @twinmatrix/rn-ui-sdk
 ```
 
 ## Versions
@@ -102,6 +77,8 @@ Aligned with `external-system-mockup/rn-u`:
 - `react` 19.1.0
 - `react-native` 0.81.5
 - `@maplibre/maplibre-react-native` 11.0.0-alpha.25
+- `@twinmatrix/rn-ui-sdk` 0.1.0
+- `@twinmatrix/spatialverse-sdk-rn` 0.1.0
 
 Plus RN UI SDK peers: Reanimated, Safe Area, Gorhom Bottom Sheet, FlashList, SVG, Zustand.
 
