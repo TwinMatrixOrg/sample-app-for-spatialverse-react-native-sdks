@@ -7,7 +7,7 @@
  */
 
 import React, {useCallback, useEffect, useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   MapExperience,
@@ -25,9 +25,45 @@ import {
 import appConfig from '../../config/app.config';
 import {ALPHABET} from '../../data/mockPlaces';
 
+/**
+ * Phase 1 theme test overrides — exaggerate spacing/type so token wiring is obvious.
+ *
+ * Font note: the UI SDK does **not** load `.ttf` / `.otf` files. It only sets
+ * `Text` `fontFamily` to the string you pass here. The **host app** must link
+ * custom fonts first; until then, use a platform system face for a visible test.
+ *
+ * Custom font later:
+ *   1. Put files in e.g. `assets/fonts/Inter-Regular.ttf`
+ *   2. Add `react-native.config.js` → `assets: ['./assets/fonts']`
+ *   3. `npx react-native-asset` (or rebuild native) so Android/iOS pick them up
+ *   4. Pass the **postscript / family name** RN expects, e.g.
+ *      `typography: { fontFamily: { sans: 'Inter' } }`
+ *      (Android often needs the file-stem name; iOS the font's PostScript name)
+ */
+const PHASE1_TEST_FONT = Platform.select({
+  ios: 'Courier',
+  android: 'monospace',
+  default: undefined,
+});
+
+// setCustomTheme('light', {
+//   accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
+//   surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
+//   spacing: {md: 20, sm: 12, lg: 24},
+//   radius: {md: 20, lg: 24},
+//   typography: {
+//     // System face — SearchBar / chips / list titles should look mono after reload.
+//     // Swap to your linked custom name when ready, e.g. { sans: 'Inter' }.
+//     fontFamily: PHASE1_TEST_FONT ? {sans: PHASE1_TEST_FONT} : undefined,
+//     sizes: {md: 15, lg: 18, xl: 20},
+//   },
+// });
+
 setCustomTheme('light', {
-  accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
-  surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
+  components: {
+    SearchBar: { styles: { field: { minHeight: 88 } } },
+    Chip: { styles: { label: { fontSize: 20 } } },
+  },
 });
 
 function MapChrome() {
