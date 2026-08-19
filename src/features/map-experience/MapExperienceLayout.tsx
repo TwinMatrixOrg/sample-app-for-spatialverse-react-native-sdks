@@ -1043,6 +1043,19 @@ function MapChrome() {
   const safeInsets = useSafeAreaInsets();
   const sdkRef = useRef<MetaAtlasSDKHandle | null>(null);
   const [sdkHandle, setSdkHandle] = useState<MetaAtlasSDKHandle | null>(null);
+  const pendingRef = useRef(false);
+  useEffect(() => {
+    if (pendingRef.current) {
+      pendingRef.current = false;
+      setSdkHandle(sdkRef.current);
+    }
+  });
+  const handleMapRefChange = useCallback((instance: MetaAtlasSDKHandle | null) => {
+    if (sdkRef.current !== instance) {
+      sdkRef.current = instance;
+      pendingRef.current = true;
+    }
+  }, []);
   const {selected, select, onPlaceSelect, onPlaceDeselect} = useMapBridge();
 
   const [listOpen, setListOpen] = useState(false);
@@ -1076,10 +1089,7 @@ function MapChrome() {
         tileserverRoleName={appConfig.metaAtlas.role}
         accessToken={appConfig.metaAtlas.accessToken}
         secretKey={appConfig.metaAtlas.secretKey}
-        onMapRefChange={instance => {
-          sdkRef.current = instance;
-          setSdkHandle(instance);
-        }}
+        onMapRefChange={handleMapRefChange}
         onLoad={() => {
           console.log('map loaded');
         }}
@@ -1144,15 +1154,15 @@ function MapChrome() {
           </MapExperience.OverlayRegion>
         ) : null}
 
-        <ListView.Carousel
+        {/* <ListView.Carousel
           open={!listOpen && !selected}
           onItemPress={onSelectPlace}
           onFavoritePress={(place, favorited) => {
             console.log('favorite', place.id, favorited);
           }}
-        />
+        /> */}
 
-        <ListView.Browse
+        {/* <ListView.Browse
           open={listOpen}
           onClose={() => setListOpen(false)}
           onItemPress={onSelectPlace}
@@ -1160,7 +1170,7 @@ function MapChrome() {
           onLetterPress={letter => {
             console.log('jump to', letter);
           }}
-        />
+        /> */}
 
         <ThrowawayNavHarness sdkRef={sdkRef} sdkHandle={sdkHandle} />
       </MapExperience.Chrome>
