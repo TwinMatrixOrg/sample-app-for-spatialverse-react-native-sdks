@@ -157,9 +157,11 @@ function buildSampleDeadZone(
 function ThrowawayNavHarness({
   sdkRef,
   sdkHandle,
+  onClose,
 }: {
   sdkRef: React.MutableRefObject<MetaAtlasSDKHandle | null>;
   sdkHandle: MetaAtlasSDKHandle | null;
+  onClose?: () => void;
 }) {
   const theme = useAppTheme();
   const {
@@ -167,6 +169,7 @@ function ThrowawayNavHarness({
     selectedFocusLevel,
     focusLevels,
   } = useMapBridge();
+  const [expanded, setExpanded] = useState(false);
   const [routeMode, setRouteMode] = useState<RouteMode>(RouteMode.WithinTerminal);
   const [startWhereDimension, setStartWhereDimension] = useState('');
   const [useInternalGps, setUseInternalGps] = useState(true);
@@ -582,12 +585,59 @@ function ThrowawayNavHarness({
       <View
         style={[
           styles.harnessCard,
+          expanded && styles.harnessCardExpanded,
           {
             backgroundColor: theme.surface.sheet,
             borderColor: theme.border.subtle,
           },
         ]}
       >
+        <View style={styles.inlineRow}>
+          <Pressable
+            onPress={handleStartToPlacePress}
+            style={[styles.primaryButton, {backgroundColor: theme.accent.primary}]}
+          >
+            <Text style={styles.primaryButtonText}>startNavigation</Text>
+          </Pressable>
+          <Pressable
+            onPress={stopNavigation}
+            style={[
+              styles.smallButton,
+              {backgroundColor: theme.surface.card, borderColor: theme.border.subtle},
+            ]}
+          >
+            <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>stopNavigation</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={expanded ? 'Collapse debug controls' : 'Expand debug controls'}
+            onPress={() => setExpanded(prev => !prev)}
+            style={[
+              styles.smallButton,
+              {backgroundColor: theme.surface.card, borderColor: theme.border.subtle},
+            ]}
+          >
+            <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>
+              {expanded ? 'Collapse' : 'Expand'}
+            </Text>
+          </Pressable>
+          {onClose ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Close directions"
+              onPress={onClose}
+              style={[
+                styles.smallButton,
+                {backgroundColor: theme.surface.card, borderColor: theme.border.subtle},
+              ]}
+            >
+              <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>Back</Text>
+            </Pressable>
+          ) : null}
+        </View>
+
+        {expanded ? (
+          <>
         <Text style={[styles.harnessEyebrow, {color: theme.semantic.warning}]}>
           Throwaway QA Harness
         </Text>
@@ -791,30 +841,12 @@ function ThrowawayNavHarness({
 
             <View style={styles.inlineRowWrap}>
               <Pressable
-                onPress={handleStartToPlacePress}
-                style={[styles.primaryButton, {backgroundColor: theme.accent.primary}]}
-              >
-                <Text style={styles.primaryButtonText}>startNavigation</Text>
-              </Pressable>
-              <Pressable
                 onPress={handleStartToCoordinatesPress}
                 style={[styles.primaryButton, {backgroundColor: theme.accent.secondary}]}
               >
                 <Text style={styles.primaryButtonText}>
                   startNavigationFromCoordinates
                 </Text>
-              </Pressable>
-            </View>
-
-            <View style={styles.inlineRow}>
-              <Pressable
-                onPress={stopNavigation}
-                style={[
-                  styles.smallButton,
-                  {backgroundColor: theme.surface.card, borderColor: theme.border.subtle},
-                ]}
-              >
-                <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>stopNavigation</Text>
               </Pressable>
               <Pressable
                 onPress={recenterCamera}
@@ -1033,6 +1065,8 @@ function ThrowawayNavHarness({
             </ScrollView>
           </View>
         </ScrollView>
+          </>
+        ) : null}
       </View>
     </MapExperience.BottomRegion>
   );
@@ -1059,6 +1093,11 @@ function MapChrome() {
   const {selected, select, onPlaceSelect, onPlaceDeselect} = useMapBridge();
 
   const [listOpen, setListOpen] = useState(false);
+  const [directionsOpen, setDirectionsOpen] = useState(false);
+
+  useEffect(() => {
+    setDirectionsOpen(false);
+  }, [selected?.id]);
 
   useEffect(() => {
     const offSelect = onPlaceSelect(place => {
@@ -1144,12 +1183,12 @@ function MapChrome() {
           </MapExperience.ControlsRegion>
         ) : null}
 
-        {!listOpen && selected ? (
+        {!listOpen && selected && !directionsOpen ? (
           <MapExperience.OverlayRegion>
             {/* Close always clears selection via MapBridge.select(null) */}
             <PlaceSummaryCard
               place={selected}
-              onDirections={() => select(selected)}
+              onDirections={() => setDirectionsOpen(true)}
             />
           </MapExperience.OverlayRegion>
         ) : null}
@@ -1172,7 +1211,13 @@ function MapChrome() {
           }}
         /> */}
 
-        <ThrowawayNavHarness sdkRef={sdkRef} sdkHandle={sdkHandle} />
+        {directionsOpen ? (
+          <ThrowawayNavHarness
+            sdkRef={sdkRef}
+            sdkHandle={sdkHandle}
+            onClose={() => setDirectionsOpen(false)}
+          />
+        ) : null}
       </MapExperience.Chrome>
     </>
   );
@@ -1215,6 +1260,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     padding: 12,
+  },
+  harnessCardExpanded: {
     maxHeight: 360,
   },
   harnessEyebrow: {
