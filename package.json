@@ -19,6 +19,8 @@
     "@twinmatrix/rn-ui-sdk": "file:sdk/ui-sdk",
     "@twinmatrix/spatialverse-sdk-rn": "file:sdk/map-sdk",
     "axios": "1.13.2",
+    "expo": "~54.0.0",
+    "expo-sensors": "~15.0.8",
     "geojson": "^0.5.0",
     "geojson-path-finder": "2.0.1",
     "ngraph.graph": "^20.0.1",

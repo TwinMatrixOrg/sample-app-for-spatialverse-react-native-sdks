@@ -66,6 +66,20 @@ const config = {
           type: 'sourceFile',
         };
       }
+      // Force a single Gorhom instance (Sheet + TextInput share React context).
+      if (
+        moduleName === '@gorhom/bottom-sheet' ||
+        moduleName.startsWith('@gorhom/bottom-sheet/')
+      ) {
+        return context.resolveRequest(
+          {
+            ...context,
+            originModulePath: path.join(appNodeModules, 'package.json'),
+          },
+          moduleName,
+          platform,
+        );
+      }
       return context.resolveRequest(context, moduleName, platform);
     },
   },

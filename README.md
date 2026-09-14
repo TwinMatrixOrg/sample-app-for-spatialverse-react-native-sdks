@@ -53,6 +53,8 @@ Update credentials in [`src/config/app.config.ts`](src/config/app.config.ts).
 
 ### iOS pods
 
+After installing `expo` / `expo-sensors`, reinstall pods so DeviceMotion links:
+
 ```bash
 bundle install
 cd ios && bundle exec pod install && cd ..
@@ -87,7 +89,6 @@ adb reverse tcp:8081 tcp:8081
 App.tsx
 src/
   config/app.config.ts
-  adapters/placeAdapter.ts
   data/mockPlaces.ts
   features/map-experience/MapExperienceLayout.tsx
 sdk/
