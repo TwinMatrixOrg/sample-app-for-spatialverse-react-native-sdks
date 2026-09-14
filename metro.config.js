@@ -28,6 +28,15 @@ const peerSingletons = [
 const escapeForRegex = value =>
   value.replace(/[/\\^$*+?.()|[\]{}]/g, '\\$&').replace(/\\\\/g, '[/\\\\]');
 
+// Scoped names like `@shopify/flash-list` must match Windows `\` as well as `/`.
+const packageNameToPathPattern = name =>
+  name.split('/').map(escapeForRegex).join('[/\\\\]');
+
+const isPeerSingleton = moduleName =>
+  peerSingletons.some(
+    name => moduleName === name || moduleName.startsWith(`${name}/`),
+  );
+
 const extraNodeModules = {
   '@twinmatrix/rn-ui-sdk': uiSdkRoot,
   '@twinmatrix/spatialverse-sdk-rn': mapSdkRoot,
@@ -36,15 +45,23 @@ for (const name of peerSingletons) {
   extraNodeModules[name] = path.resolve(appNodeModules, name);
 }
 
-const uiSdkNodeModules = path.join(uiSdkRoot, 'node_modules');
-const blockList = peerSingletons.map(
-  name =>
-    new RegExp(
-      `${escapeForRegex(uiSdkNodeModules)}[/\\\\]${escapeForRegex(name)}[/\\\\].*`,
-    ),
+const nestedNodeModulesRoots = [
+  path.join(uiSdkRoot, 'node_modules'),
+  path.join(mapSdkRoot, 'node_modules'),
+];
+const blockList = nestedNodeModulesRoots.flatMap(root =>
+  peerSingletons.map(
+    name =>
+      new RegExp(
+        `${escapeForRegex(root)}[/\\\\]${packageNameToPathPattern(
+          name,
+        )}[/\\\\].*`,
+      ),
+  ),
 );
 
 const uiSdkEntry = path.resolve(uiSdkRoot, 'src/index.ts');
+const appPackageJson = path.join(appNodeModules, 'package.json');
 
 const config = {
   watchFolders: [mapSdkRoot, uiSdkRoot],
@@ -66,15 +83,13 @@ const config = {
           type: 'sourceFile',
         };
       }
-      // Force a single Gorhom instance (Sheet + TextInput share React context).
-      if (
-        moduleName === '@gorhom/bottom-sheet' ||
-        moduleName.startsWith('@gorhom/bottom-sheet/')
-      ) {
+      // Nested SDK node_modules (esp. scoped peers on Windows) otherwise
+      // register native views twice — AutoLayoutView / FlashList crash.
+      if (isPeerSingleton(moduleName)) {
         return context.resolveRequest(
           {
             ...context,
-            originModulePath: path.join(appNodeModules, 'package.json'),
+            originModulePath: appPackageJson,
           },
           moduleName,
           platform,
