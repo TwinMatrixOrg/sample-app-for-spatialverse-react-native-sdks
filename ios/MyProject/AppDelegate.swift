@@ -1,23 +1,43 @@
-import UIKit
+import Expo
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 
-@main
-class AppDelegate: RCTAppDelegate {
-  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    self.moduleName = "MyProject"
-    self.dependencyProvider = RCTAppDependencyProvider()
+@UIApplicationMain
+public class AppDelegate: ExpoAppDelegate {
+  var window: UIWindow?
 
-    // You can add your custom initial props in the dictionary below.
-    // They will be passed down to the ViewController used by React Native.
-    self.initialProps = [:]
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  public override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+    bindReactNativeFactory(factory)
+
+    #if os(iOS) || os(tvOS)
+    window = UIWindow(frame: UIScreen.main.bounds)
+    factory.startReactNative(
+      withModuleName: "MyProject",
+      in: window,
+      launchOptions: launchOptions
+    )
+    #endif
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+}
 
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {
-    self.bundleURL()
+    bridge.bundleURL ?? bundleURL()
   }
 
   override func bundleURL() -> URL? {

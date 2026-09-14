@@ -75,3 +75,5 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.sandcastle/
+sandcastle-ticket-runner/

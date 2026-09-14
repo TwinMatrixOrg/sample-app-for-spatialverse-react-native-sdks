@@ -4,9 +4,13 @@
  * Sticky search + category chips stay on top in both map and list modes.
  * Chrome insets / safe area are owned by MapLayout inside MapExperience.Root.
  * Carousel height / bottomOffset are SDK-dynamic (measure + theme) unless overridden.
+ *
+ * Onboarding + Wayfinding are always-mounted Chrome siblings (omit-by-not-mounting).
+ * Credentials stay on Canvas; theme on Root / setCustomTheme. Directions opens via
+ * NavBridge when PlaceSummaryCard omits onDirections — no host directionsOpen.
  */
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
@@ -17,38 +21,61 @@ import {
   GpsControlButton,
   FocusControl,
   PlaceSummaryCard,
+  FloorChangeBanner,
   setCustomTheme,
   useAppTheme,
   useMapBridge,
+  useNavBridgeOptional,
+  isRoutePreviewActive,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
 import appConfig from '../../config/app.config';
+import {renderRwsWelcome} from './RwsWelcome';
 import {ALPHABET} from '../../data/mockPlaces';
 
+/**
+ *
+ * Font note: the UI SDK does **not** load `.ttf` / `.otf` files. It only sets
+ * `Text` `fontFamily` to the string you pass here. The **host app** must link
+ * custom fonts first; until then, use a platform system face for a visible test.
+ *
+ * Custom font later:
+ *   1. Put files in e.g. `assets/fonts/Inter-Regular.ttf`
+ *   2. Add `react-native.config.js` → `assets: ['./assets/fonts']`
+ *   3. `npx react-native-asset` (or rebuild native) so Android/iOS pick them up
+ *   4. Pass the **postscript / family name** RN expects, e.g.
+ *      `typography: { fontFamily: { sans: 'Inter' } }`
+ *      (Android often needs the file-stem name; iOS the font's PostScript name)
+ */
+// setCustomTheme('light', {
+//   accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
+//   surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
+//   spacing: {md: 20, sm: 12, lg: 24},
+//   radius: {md: 20, lg: 24},
+//   typography: {
+//     // System face — SearchBar / chips / list titles should look mono after reload.
+//     // Swap to your linked custom name when ready, e.g. { sans: 'Inter' }.
+//     fontFamily: PHASE1_TEST_FONT ? {sans: PHASE1_TEST_FONT} : undefined,
+//     sizes: {md: 15, lg: 18, xl: 20},
+//   },
+// });
+
+// Custom theme test code only
 setCustomTheme('light', {
-  accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
-  surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
+  components: {
+    SearchBar: {styles: {field: {minHeight: 88}}},
+    Chip: {styles: {label: {fontSize: 20}}},
+  },
 });
 
 function MapChrome() {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
-  const {selected, select, onPlaceSelect, onPlaceDeselect} = useMapBridge();
+  const {selected, select} = useMapBridge();
+  const nav = useNavBridgeOptional();
+  const routePreviewActive = isRoutePreviewActive(nav?.phase);
 
   const [listOpen, setListOpen] = useState(false);
-
-  useEffect(() => {
-    const offSelect = onPlaceSelect(place => {
-      console.log('place selected', place.id);
-    });
-    const offDeselect = onPlaceDeselect(() => {
-      console.log('place deselected');
-    });
-    return () => {
-      offSelect();
-      offDeselect();
-    };
-  }, [onPlaceSelect, onPlaceDeselect]);
 
   // Run custom logic on place select here.
   // Providing onItemPress fully replaces the SDK default (MapBridge.select).
@@ -75,6 +102,15 @@ function MapChrome() {
       />
 
       <MapExperience.Chrome>
+        {/*
+          Only welcome is overridden here (RWS brand).
+          Same pattern works for renderPrompt / renderFinding / renderOutside /
+          renderError — omit those to keep portable SDK defaults.
+        */}
+        <MapExperience.Onboarding renderWelcome={renderRwsWelcome} />
+
+        <MapExperience.Wayfinding />
+
         <MapExperience.TopRegion>
           <View
             style={[
@@ -89,11 +125,20 @@ function MapChrome() {
             <SearchBar
               showResults={!listOpen}
               resultsProps={{
-                onItemPress: onSelectPlace,
+                onPress: onSelectPlace,
+              }}
+              styles={{
+                // Custom style override test code only
+                results: {backgroundColor: 'skyblue'}, 
+                field: {
+                  borderCurve: 'continuous',
+                  borderWidth: 2,
+                  borderColor: 'skyblue',
+                },
               }}
             />
-            {/* items/onItemPress omitted → PlaceCatalog what-taxonomies */}
-            <CategoryChips />
+            {/* categories/onPress omitted → PlaceCatalog what-taxonomies */}
+            <CategoryChips/>
           </View>
         </MapExperience.TopRegion>
 
@@ -101,35 +146,42 @@ function MapChrome() {
           <MapExperience.ControlsRegion>
             <FocusControl />
             <GpsControlButton layout="stack" />
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Open list view"
-              onPress={() => setListOpen(true)}
-              style={[
-                styles.listToggle,
-                {
-                  backgroundColor: theme.surface.card,
-                  borderColor: theme.border.subtle,
-                },
-              ]}
-            >
-              <Text style={{fontWeight: '700', color: theme.text.primary}}>
-                List
-              </Text>
-            </Pressable>
+            {!routePreviewActive ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Open list view"
+                onPress={() => setListOpen(true)}
+                style={[
+                  styles.listToggle,
+                  {
+                    backgroundColor: theme.surface.card,
+                    borderColor: theme.border.subtle,
+                  },
+                ]}
+              >
+                <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>
+                  List
+                </Text>
+              </Pressable>
+            ) : null}
           </MapExperience.ControlsRegion>
         ) : null}
 
-        {!listOpen && selected ? (
-          <MapExperience.OverlayRegion>
-            {/* Close always clears selection via MapBridge.select(null) */}
-            <PlaceSummaryCard
-              place={selected}
-              onDirections={() => select(selected)}
-            />
-          </MapExperience.OverlayRegion>
-        ) : null}
+        <MapExperience.OverlayRegion>
+          <FloorChangeBanner />
+          {/*
+            Omit onDirections → NavBridge startRoutingForPlace.
+            PlaceSummaryCard yields for the whole routing session (draft → arrived)
+          */}
+          {!listOpen && selected ? (
+            <PlaceSummaryCard place={selected} />
+          ) : null}
+        </MapExperience.OverlayRegion>
 
+        {/*
+          open is discover-side only; ListView.Carousel also yields during
+          route preview/live (web startClicked equivalent).
+        */}
         <ListView.Carousel
           open={!listOpen && !selected}
           onItemPress={onSelectPlace}
@@ -179,5 +231,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 6,
     shadowOffset: {width: 0, height: 2},
+  },
+  buttonLabel: {
+    fontWeight: '700',
   },
 });

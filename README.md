@@ -15,6 +15,8 @@ Convenient drop-in setup: pass MetaAtlas credentials to `MapExperience.Canvas`, 
 - `FocusControl` + `GpsControlButton` in `ControlsRegion`
 - `ListView.Carousel` / `Browse` (map stays mounted)
 - `PlaceSummaryCard` for the selected place
+- `MapExperience.Onboarding` + `MapExperience.Wayfinding` chrome (directions via NavBridge)
+- RWS welcome screen (`renderWelcome`)
 
 Matches the **Basic Setup — Embed in a Tab** example in the hub RN UI SDK docs (`for-rn-ui-developers`).
 
@@ -34,6 +36,8 @@ npm install
 Set MetaAtlas credentials in [`src/config/app.config.ts`](src/config/app.config.ts).
 
 ### iOS
+
+After installing `expo` / `expo-sensors`, reinstall pods so DeviceMotion links:
 
 ```bash
 bundle install
@@ -64,10 +68,9 @@ adb reverse tcp:8081 tcp:8081
 App.tsx
 src/
   config/app.config.ts
+  data/mockPlaces.ts
   features/map-experience/MapExperienceLayout.tsx
-sdk/
-  ui-sdk/   # @twinmatrix/rn-ui-sdk (local)
-  map-sdk/  # @twinmatrix/spatialverse-sdk-rn (local)
+  features/map-experience/RwsWelcome.tsx
 ```
 
 ## Docs

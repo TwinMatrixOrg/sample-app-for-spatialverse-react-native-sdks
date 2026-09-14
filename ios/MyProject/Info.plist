@@ -33,6 +33,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app uses your location to show your position on the airport map and provide navigation.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app uses motion sensors to continue indoor navigation when GPS is unreliable.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
