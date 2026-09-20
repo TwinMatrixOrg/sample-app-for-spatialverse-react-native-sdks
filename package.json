@@ -17,7 +17,7 @@
     "@react-native-community/netinfo": "^11.4.1",
     "@shopify/flash-list": "^1.7.3",
     "@twinmatrix/rn-ui-sdk": "0.2.1",
-    "@twinmatrix/spatialverse-sdk-rn": "0.2.4",
+    "@twinmatrix/spatialverse-sdk-rn": "0.2.5",
     "axios": "1.13.2",
     "expo": "~54.0.0",
     "expo-sensors": "~15.0.8",
