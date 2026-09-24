@@ -10,7 +10,7 @@
  * NavBridge when PlaceSummaryCard omits onDirections — no host directionsOpen.
  */
 
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
@@ -26,7 +26,7 @@ import {
   useAppTheme,
   useMapBridge,
   useNavBridgeOptional,
-  isRoutePreviewActive,
+  isListMapToggleVisible,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
 import appConfig from '../../config/app.config';
@@ -73,9 +73,15 @@ function MapChrome() {
   const safeInsets = useSafeAreaInsets();
   const {selected, select} = useMapBridge();
   const nav = useNavBridgeOptional();
-  const routePreviewActive = isRoutePreviewActive(nav?.phase);
+  const showListMapToggle = isListMapToggleVisible(nav?.phase);
 
   const [listOpen, setListOpen] = useState(false);
+
+  useEffect(() => {
+    if (!showListMapToggle) {
+      setListOpen(false);
+    }
+  }, [showListMapToggle]);
 
   // Run custom logic on place select here.
   // Providing onItemPress fully replaces the SDK default (MapBridge.select).
@@ -146,7 +152,7 @@ function MapChrome() {
           <MapExperience.ControlsRegion>
             <FocusControl />
             <GpsControlButton layout="stack" />
-            {!routePreviewActive ? (
+            {showListMapToggle && !listOpen ? (
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Open list view"
@@ -169,14 +175,16 @@ function MapChrome() {
 
         <MapExperience.OverlayRegion>
           <FloorChangeBanner />
-          {/*
-            Omit onDirections → NavBridge startRoutingForPlace.
-            PlaceSummaryCard yields for the whole routing session (draft → arrived)
-          */}
-          {!listOpen && selected ? (
-            <PlaceSummaryCard place={selected} />
-          ) : null}
         </MapExperience.OverlayRegion>
+
+        {/*
+          Chrome sibling so the sheet snaps against the map, not OverlayRegion.
+          Omit onDirections → NavBridge startRoutingForPlace.
+          PlaceSummaryCard yields for the whole routing session (draft → arrived).
+        */}
+        {!listOpen && selected ? (
+          <PlaceSummaryCard place={selected} />
+        ) : null}
 
         {/*
           open is discover-side only; ListView.Carousel also yields during
