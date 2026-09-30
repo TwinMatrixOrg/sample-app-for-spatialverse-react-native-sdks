@@ -6,7 +6,7 @@
  * Carousel height / bottomOffset are SDK-dynamic (measure + theme) unless overridden.
  *
  * Onboarding + Wayfinding are always-mounted Chrome siblings (omit-by-not-mounting).
- * Credentials stay on Canvas; theme on Root / setCustomTheme. Directions opens via
+ * Credentials stay on Canvas; theme mode is set on Root. Directions opens via
  * NavBridge when PlaceSummaryCard omits onDirections — no host directionsOpen.
  */
 
@@ -22,7 +22,6 @@ import {
   FocusControl,
   PlaceSummaryCard,
   FloorChangeBanner,
-  setCustomTheme,
   useAppTheme,
   useMapBridge,
   useNavBridgeOptional,
@@ -32,41 +31,6 @@ import {
 import appConfig from '../../config/app.config';
 import {renderRwsWelcome} from './RwsWelcome';
 import {ALPHABET} from '../../data/mockPlaces';
-
-/**
- *
- * Font note: the UI SDK does **not** load `.ttf` / `.otf` files. It only sets
- * `Text` `fontFamily` to the string you pass here. The **host app** must link
- * custom fonts first; until then, use a platform system face for a visible test.
- *
- * Custom font later:
- *   1. Put files in e.g. `assets/fonts/Inter-Regular.ttf`
- *   2. Add `react-native.config.js` → `assets: ['./assets/fonts']`
- *   3. `npx react-native-asset` (or rebuild native) so Android/iOS pick them up
- *   4. Pass the **postscript / family name** RN expects, e.g.
- *      `typography: { fontFamily: { sans: 'Inter' } }`
- *      (Android often needs the file-stem name; iOS the font's PostScript name)
- */
-// setCustomTheme('light', {
-//   accent: {primary: '#0B7A75', secondary: '#6D5AD0'},
-//   surface: {topbar: '#FFFFFF', sheet: '#FFFFFF'},
-//   spacing: {md: 20, sm: 12, lg: 24},
-//   radius: {md: 20, lg: 24},
-//   typography: {
-//     // System face — SearchBar / chips / list titles should look mono after reload.
-//     // Swap to your linked custom name when ready, e.g. { sans: 'Inter' }.
-//     fontFamily: PHASE1_TEST_FONT ? {sans: PHASE1_TEST_FONT} : undefined,
-//     sizes: {md: 15, lg: 18, xl: 20},
-//   },
-// });
-
-// Custom theme test code only
-setCustomTheme('light', {
-  components: {
-    SearchBar: {styles: {field: {minHeight: 88}}},
-    Chip: {styles: {label: {fontSize: 20}}},
-  },
-});
 
 function MapChrome() {
   const theme = useAppTheme();
@@ -132,15 +96,6 @@ function MapChrome() {
               showResults={!listOpen}
               resultsProps={{
                 onPress: onSelectPlace,
-              }}
-              styles={{
-                // Custom style override test code only
-                results: {backgroundColor: 'skyblue'}, 
-                field: {
-                  borderCurve: 'continuous',
-                  borderWidth: 2,
-                  borderColor: 'skyblue',
-                },
               }}
             />
             {/* categories/onPress omitted → PlaceCatalog what-taxonomies */}
