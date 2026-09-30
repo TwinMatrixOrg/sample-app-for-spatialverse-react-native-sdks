@@ -2556,10 +2556,10 @@
     "@turf/meta" "^6.5.0"
     "@turf/rhumb-destination" "^6.5.0"
 
-"@twinmatrix/rn-ui-sdk@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@twinmatrix/rn-ui-sdk/-/rn-ui-sdk-0.2.2.tgz"
-  integrity sha512-HL71OBMS/HtWlt0yVzHrXaBEkv2RTJtlYRBw1a/WS7lHCf6yfy6d3w6H9ssCrllDQDkJ73H+jtEQmzWHgMFOpA==
+"@twinmatrix/rn-ui-sdk@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@twinmatrix/rn-ui-sdk/-/rn-ui-sdk-0.2.1.tgz"
+  integrity sha512-w7NYfat1ApS8UR7RNNHWbOv/3Gd6+GVNiAfrKVcZV1wKDnIk6rN8P9l/UNCHQYvxDkkG6vMF0EVYhav2uAwe6A==
   dependencies:
     "@turf/boolean-intersects" "^6.5.0"
     "@turf/boolean-point-in-polygon" "^6.5.0"

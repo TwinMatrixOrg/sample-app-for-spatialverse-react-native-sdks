@@ -25,7 +25,6 @@ import {
   useAppTheme,
   useMapBridge,
   useNavBridgeOptional,
-  isListMapToggleVisible,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
 import appConfig from '../../config/app.config';
@@ -37,7 +36,7 @@ function MapChrome() {
   const safeInsets = useSafeAreaInsets();
   const {selected, select} = useMapBridge();
   const nav = useNavBridgeOptional();
-  const showListMapToggle = isListMapToggleVisible(nav?.phase);
+  const showListMapToggle = nav?.phase == null || nav.phase === 'idle';
 
   const [listOpen, setListOpen] = useState(false);
 
