@@ -4,8 +4,8 @@
  * Sticky search + category chips stay on top in both map and list modes.
  * Chrome insets / safe area are owned by MapLayout inside MapExperience.Root.
  *
- * 0.2.0 host: credentials on Canvas, MapBridge fills search, chips, lists,
- * GPS, and floors. Directions stays a host callback. No Onboarding or Wayfinding.
+ * 0.1.0 host: credentials on Canvas. MapBridge fills search, chips, lists,
+ * GPS, and floors. Directions stays a host callback.
  */
 
 import React, {useCallback, useState} from 'react';
