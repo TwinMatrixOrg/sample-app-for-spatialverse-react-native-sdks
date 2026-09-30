@@ -3,14 +3,12 @@
  *
  * Sticky search + category chips stay on top in both map and list modes.
  * Chrome insets / safe area are owned by MapLayout inside MapExperience.Root.
- * Carousel height / bottomOffset are SDK-dynamic (measure + theme) unless overridden.
  *
- * Onboarding + Wayfinding are always-mounted Chrome siblings (omit-by-not-mounting).
- * Credentials stay on Canvas; theme mode is set on Root. Directions opens via
- * NavBridge when PlaceSummaryCard omits onDirections — no host directionsOpen.
+ * 0.2.0 host: credentials on Canvas, MapBridge fills search, chips, lists,
+ * GPS, and floors. Directions stays a host callback. No Onboarding or Wayfinding.
  */
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
@@ -21,33 +19,20 @@ import {
   GpsControlButton,
   FocusControl,
   PlaceSummaryCard,
-  FloorChangeBanner,
   useAppTheme,
   useMapBridge,
-  useNavBridgeOptional,
-  isListMapToggleVisible,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
 import appConfig from '../../config/app.config';
-import {renderRwsWelcome} from './RwsWelcome';
 import {ALPHABET} from '../../data/mockPlaces';
 
 function MapChrome() {
   const theme = useAppTheme();
   const safeInsets = useSafeAreaInsets();
   const {selected, select} = useMapBridge();
-  const nav = useNavBridgeOptional();
-  const showListMapToggle = isListMapToggleVisible(nav?.phase);
 
   const [listOpen, setListOpen] = useState(false);
 
-  useEffect(() => {
-    if (!showListMapToggle) {
-      setListOpen(false);
-    }
-  }, [showListMapToggle]);
-
-  // Run custom logic on place select here.
   // Providing onItemPress fully replaces the SDK default (MapBridge.select).
   const onSelectPlace = useCallback(
     (place: PlaceItem) => {
@@ -72,15 +57,6 @@ function MapChrome() {
       />
 
       <MapExperience.Chrome>
-        {/*
-          Only welcome is overridden here (RWS brand).
-          Same pattern works for renderPrompt / renderFinding / renderOutside /
-          renderError — omit those to keep portable SDK defaults.
-        */}
-        <MapExperience.Onboarding renderWelcome={renderRwsWelcome} />
-
-        <MapExperience.Wayfinding />
-
         <MapExperience.TopRegion>
           <View
             style={[
@@ -95,11 +71,11 @@ function MapChrome() {
             <SearchBar
               showResults={!listOpen}
               resultsProps={{
-                onPress: onSelectPlace,
+                onItemPress: onSelectPlace,
               }}
             />
-            {/* categories/onPress omitted → PlaceCatalog what-taxonomies */}
-            <CategoryChips/>
+            {/* items omitted → PlaceCatalog what-taxonomies */}
+            <CategoryChips />
           </View>
         </MapExperience.TopRegion>
 
@@ -107,44 +83,37 @@ function MapChrome() {
           <MapExperience.ControlsRegion>
             <FocusControl />
             <GpsControlButton layout="stack" />
-            {showListMapToggle && !listOpen ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Open list view"
-                onPress={() => setListOpen(true)}
-                style={[
-                  styles.listToggle,
-                  {
-                    backgroundColor: theme.surface.card,
-                    borderColor: theme.border.subtle,
-                  },
-                ]}
-              >
-                <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>
-                  List
-                </Text>
-              </Pressable>
-            ) : null}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open list view"
+              onPress={() => setListOpen(true)}
+              style={[
+                styles.listToggle,
+                {
+                  backgroundColor: theme.surface.card,
+                  borderColor: theme.border.subtle,
+                },
+              ]}
+            >
+              <Text style={[styles.buttonLabel, {color: theme.text.primary}]}>
+                List
+              </Text>
+            </Pressable>
           </MapExperience.ControlsRegion>
         ) : null}
 
         <MapExperience.OverlayRegion>
-          <FloorChangeBanner />
+          {!listOpen && selected ? (
+            <PlaceSummaryCard
+              place={selected}
+              onClose={() => select(null)}
+              onDirections={() => {
+                console.log('directions', selected.id);
+              }}
+            />
+          ) : null}
         </MapExperience.OverlayRegion>
 
-        {/*
-          Chrome sibling so the sheet snaps against the map, not OverlayRegion.
-          Omit onDirections → NavBridge startRoutingForPlace.
-          PlaceSummaryCard yields for the whole routing session (draft → arrived).
-        */}
-        {!listOpen && selected ? (
-          <PlaceSummaryCard place={selected} />
-        ) : null}
-
-        {/*
-          open is discover-side only; ListView.Carousel also yields during
-          route preview/live (web startClicked equivalent).
-        */}
         <ListView.Carousel
           open={!listOpen && !selected}
           onItemPress={onSelectPlace}

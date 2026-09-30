@@ -1,6 +1,6 @@
 # Sample App — SpatialVerse React Native SDKs
 
-This branch is the sample app for `@twinmatrix/rn-ui-sdk` **0.2.2**.
+This branch is the sample app for `@twinmatrix/rn-ui-sdk` **0.2.0**.
 
 Reference React Native host for:
 
@@ -16,9 +16,7 @@ Convenient drop-in setup: pass MetaAtlas credentials to `MapExperience.Canvas`, 
 - Sticky `SearchBar` + `CategoryChips`
 - `FocusControl` + `GpsControlButton` in `ControlsRegion`
 - `ListView.Carousel` / `Browse` (map stays mounted)
-- `PlaceSummaryCard` for the selected place
-- `MapExperience.Onboarding` + `MapExperience.Wayfinding` chrome (directions via NavBridge)
-- RWS welcome screen (`renderWelcome`)
+- `PlaceSummaryCard` for the selected place (Directions is a host callback)
 
 Matches the **Basic Setup — Embed in a Tab** example in the hub RN UI SDK docs (`for-rn-ui-developers`).
 
@@ -72,7 +70,6 @@ src/
   config/app.config.ts
   data/mockPlaces.ts
   features/map-experience/MapExperienceLayout.tsx
-  features/map-experience/RwsWelcome.tsx
 ```
 
 ## Docs
