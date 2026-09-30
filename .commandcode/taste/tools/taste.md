@@ -1,0 +1,6 @@
+- Uses `grep` heavily to navigate the codebase by symbol name (functions, types, exported names) with `output_mode: files_with_matches` first, then `output_mode: content` with `-n` and `-C` flags. Confidence: 0.95
+- Uses `read_file` with explicit `offset` and `limit` ranges to navigate large files incrementally. Confidence: 0.95
+- Uses `read_directory` to explore folder structure before reading files. Confidence: 0.9
+- Uses `shell_command` with `powershell -NoProfile -Command "..."` to run shell commands on Windows. Confidence: 0.95
+- Inspects minified JS bundles via `Get-Content $f -Raw | IndexOf(...)` for positional substring searches and `Substring()` for context dumps. Confidence: 0.85
+- Uses source maps (`index.js.map`) to trace minified identifiers back to original source paths. Confidence: 0.8

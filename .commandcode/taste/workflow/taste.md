@@ -1,0 +1,7 @@
+- Works on a React Native sample app consuming two published twinmatrix SDKs: `@twinmatrix/spatialverse-sdk-rn` (map SDK) and `@twinmatrix/rn-ui-sdk` (UI SDK), with the local workspace at `sdk/` mirroring them. Confidence: 0.95
+- Uses `git diff` and `git log --all` to inspect recent changes / version bumps in dependency versions. Confidence: 0.9
+- Targets the RWS-TIC (Resorts World Sentosa) credentials/atoms data (e.g. `atoms-sdk.sandbox.spatialverse.online/rws-tic/0.0.1626/`). Confidence: 0.9
+- Bumps SDK versions in `package.json` and expects the assistant to track deltas between versions (e.g. `0.2.1 → 0.2.2` for `rn-ui-sdk`, `0.2.5 → 0.2.6` for `spatialverse-sdk-rn`). Confidence: 0.85
+- Has a local pre-built `sdk/map-sdk/lib/esm/index.js` and `sdk/ui-sdk/lib/esm/index.js` that is byte-identical (SHA256) to `node_modules/@twinmatrix/*/lib/esm/index.js`. Edits require rebuilding. Confidence: 0.9
+- Uses PowerShell (`powershell -NoProfile -Command ...`) for shell commands, including `Get-ChildItem`, `Get-FileHash`, `Select-String`, `Compare-Object`. Confidence: 0.95
+- Works with Windows paths (`D:\stemcag\...`) and backslash separators in file tool arguments. Confidence: 0.95

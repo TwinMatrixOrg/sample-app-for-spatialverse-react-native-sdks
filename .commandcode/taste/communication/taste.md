@@ -1,0 +1,5 @@
+- Writes informally with terse, slightly broken English ("becase", missing punctuation). Confidence: 0.9
+- Prefers concise user messages — gives log snippets and asks for a focused investigation rather than long explanations. Confidence: 0.85
+- Says "continue" to push the assistant forward through extended investigations without re-prompting. Confidence: 0.95
+- Prefers the assistant to deeply investigate and report findings rather than ask clarifying questions when given logs and a hypothesis. Confidence: 0.85
+- When reporting a UI bug, provides a hypothesis ("map sdk logs seem fine", "scan ui map bridge stuff") alongside the symptom and logs. Confidence: 0.8

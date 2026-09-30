@@ -1,0 +1,7 @@
+- Prefers systematic code-archaeology debugging: traces data flow end-to-end through published/bundled code (not just local source) to find root causes. Confidence: 0.9
+- When debugging SDK issues, expects the assistant to compare local source against installed `node_modules` builds (hash-check bundles) to confirm they're identical before assuming drift. Confidence: 0.85
+- Prefers hypothesis-driven debugging: enumerates candidate causes (race conditions, race in `mapRef.current`, double-init, etc.) and eliminates them systematically with reasoning, rather than randomly instrumenting. Confidence: 0.85
+- Wants the assistant to inspect minified/bundled JS via positional substring searches (`IndexOf`) and source maps when published package source isn't readable. Confidence: 0.8
+- Prefers reading `meta-atlas-sdk-core.ts` for the SDK data path: `setupMapObjectSearch` → `searchableGeoJsonFeatures` → `getAllMapObjects` → bridge `loadAll` → `setAllPlaces` → UI. Confidence: 0.9
+- Expects attention to React ref ordering (parent `bindMapRef` vs child `useEffect` for `setupMapObjectSearch`) as a possible race condition source. Confidence: 0.8
+- Prefers tracing async callback ordering through minified bundles (e.g. `function de = useCallback(...)` decoding) to verify wiring matches expectations. Confidence: 0.75
