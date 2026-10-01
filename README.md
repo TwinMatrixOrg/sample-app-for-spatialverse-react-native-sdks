@@ -5,7 +5,7 @@ This branch is the sample app for `@twinmatrix/rn-ui-sdk` **0.2.0**.
 Reference React Native host for:
 
 - **`@twinmatrix/rn-ui-sdk`** — map experience layout, widgets, theme, MapBridge
-- **`@twinmatrix/spatialverse-sdk-rn`** — MetaAtlas map engine
+- **`@twinmatrix/spatialverse-sdk-rn` 0.2.3** — MetaAtlas map engine
 
 RN counterpart to [sample-app-for-spatialverse-web-sdks](https://github.com/TwinMatrixOrg/sample-app-for-spatialverse-web-sdks).
 

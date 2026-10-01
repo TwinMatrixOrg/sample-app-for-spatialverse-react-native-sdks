@@ -2561,10 +2561,10 @@
   resolved "https://registry.npmjs.org/@twinmatrix/rn-ui-sdk/-/rn-ui-sdk-0.2.0.tgz"
   integrity sha512-Kll+61yE0l3KbJ7eflbJfiuMHcrGHiy9cRtezJ8O3VxHUEWTTEPFjWQbRt0nvC90OrREO1IGtP5maxRt1JA5sw==
 
-"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.7":
-  version "0.2.7"
-  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.7.tgz"
-  integrity sha512-wA2lBy0vd4yF1UYA1e33EJqNwnWc4TdREsVLDqBQQRPrEFGG4Gp84mj0Zy8UaKkxKzCQldLiZOIxoLlsOlulWw==
+"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.3":
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.3.tgz"
+  integrity sha512-MHhMgnBZYIFmLzp/La1wP5auZkpbgFisWAovUEUcGwCKNdduoObmK8LrMxUaeXDbEpCaPak3ycLd5dA7LVzK4g==
   dependencies:
     "@dagrejs/graphlib" "^2.2.4"
     "@turf/along" "6.5.0"
