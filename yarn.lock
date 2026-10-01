@@ -2566,10 +2566,10 @@
     "@turf/buffer" "^6.5.0"
     "@turf/helpers" "^6.5.0"
 
-"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.7":
-  version "0.2.7"
-  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.7.tgz"
-  integrity sha512-wA2lBy0vd4yF1UYA1e33EJqNwnWc4TdREsVLDqBQQRPrEFGG4Gp84mj0Zy8UaKkxKzCQldLiZOIxoLlsOlulWw==
+"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.5":
+  version "0.2.5"
+  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.5.tgz"
+  integrity sha512-yR5+p+3RavULPCxpkoZ9YJtlL/z+hB7E4oBqESrxaRfGNmCcu78B7AkjnIaZ6uIhVE2wS1Ooy7aksFpiTOSE/w==
   dependencies:
     "@dagrejs/graphlib" "^2.2.4"
     "@turf/along" "6.5.0"
