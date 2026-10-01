@@ -1816,10 +1816,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@maplibre/maplibre-react-native@11.0.0-alpha.30":
-  version "11.0.0-alpha.30"
-  resolved "https://registry.npmjs.org/@maplibre/maplibre-react-native/-/maplibre-react-native-11.0.0-alpha.30.tgz"
-  integrity sha512-wCt99/FaP7pTawz49grjcAfEVo6+pOcjqgjxLeRbx0/fJhPeQ7pxdbYNZvJe3wZu7PHVrKoPbOPuVyXasbF2Sw==
+"@maplibre/maplibre-react-native@11.0.0-alpha.25":
+  version "11.0.0-alpha.25"
+  resolved "https://registry.npmjs.org/@maplibre/maplibre-react-native/-/maplibre-react-native-11.0.0-alpha.25.tgz"
+  integrity sha512-w7z/iSCWRGP9yNdU1NZFwe7ZG7Frajc6sFw6HW8ad4qubQopM5DRsW8LHnswcfHl52I4rFYwxLd/edcVq8KyPg==
   dependencies:
     "@turf/distance" "^7.1.0"
     "@turf/helpers" "^7.1.0"
@@ -2561,13 +2561,12 @@
   resolved "https://registry.npmjs.org/@twinmatrix/rn-ui-sdk/-/rn-ui-sdk-0.1.0.tgz"
   integrity sha512-OM6QFuVmhun+IEoLlycSJxCJPXmNQ32/Y3e9CYociH7CsFRXBp+0rbGg+foXw5DmwRs48G+VmBs+CnIrryUz9A==
 
-"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.7":
-  version "0.2.7"
-  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.7.tgz"
-  integrity sha512-wA2lBy0vd4yF1UYA1e33EJqNwnWc4TdREsVLDqBQQRPrEFGG4Gp84mj0Zy8UaKkxKzCQldLiZOIxoLlsOlulWw==
+"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.1.0.tgz"
+  integrity sha512-tgpgzdf7hqm+QcU/janu4oea+iRLDqw0h4cXUeZmBAMJhq8aZepji77MeYJtjAXEUxSqsDpqkvslOAohkhne9g==
   dependencies:
     "@dagrejs/graphlib" "^2.2.4"
-    "@turf/along" "6.5.0"
     "@turf/area" "6.5.0"
     "@turf/bbox" "6.5.0"
     "@turf/bearing" "6.5.0"
@@ -2589,7 +2588,6 @@
     base-64 "^1.0.0"
     geojson "^0.5.0"
     geojson-path-finder "^2.0.1"
-    geojson-rbush "^3.2.0"
     lodash "git+https://github.com/TwinMatrixOrg/lodash.git#4cf78bf2e3c982a3ad6f4236bf45a958210bb6ee"
     ngraph.graph "^20.0.1"
     ngraph.path "^1.3.1"
