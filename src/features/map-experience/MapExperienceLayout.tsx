@@ -12,7 +12,6 @@
 
 import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {
   MapExperience,
   ListView,
@@ -25,7 +24,9 @@ import {
   setCustomTheme,
   useAppTheme,
   useMapBridge,
-  useNavBridgeOptional,
+  useMapBridgeActions,
+  useMapLayout,
+  useNavBridgeSelectorOptional,
   isListMapToggleVisible,
   type PlaceItem,
 } from '@twinmatrix/rn-ui-sdk';
@@ -68,12 +69,100 @@ setCustomTheme('light', {
   },
 });
 
+/** Reads layout insets here, not in MapChrome, so inset changes skip the map. */
+function StickyHeader({
+  listOpen,
+  onSelectPlace,
+}: {
+  listOpen: boolean;
+  onSelectPlace: (place: PlaceItem) => void;
+}) {
+  const theme = useAppTheme();
+  const layout = useMapLayout();
+  return (
+    <View
+      style={[
+        styles.stickyHeader,
+        {
+          paddingTop: layout.safe.top + 8,
+          backgroundColor: theme.surface.topbar,
+          borderBottomColor: theme.border.subtle,
+        },
+      ]}
+    >
+      <SearchBar
+        showResults={!listOpen}
+        resultsProps={{
+          onPress: onSelectPlace,
+        }}
+        styles={{
+          // Custom style override test code only
+          results: {backgroundColor: 'skyblue'},
+          field: {
+            borderCurve: 'continuous',
+            borderWidth: 2,
+            borderColor: 'skyblue',
+          },
+        }}
+      />
+      {/* categories/onPress omitted → PlaceCatalog what-taxonomies */}
+      <CategoryChips/>
+    </View>
+  );
+}
+
+/** Reads `selected` here, not in MapChrome, so a selection skips the map. */
+function SelectionSurfaces({
+  listOpen,
+  onSelectPlace,
+}: {
+  listOpen: boolean;
+  onSelectPlace: (place: PlaceItem) => void;
+}) {
+  const {selected} = useMapBridge();
+  return (
+    <>
+      {/*
+        Chrome sibling so the sheet snaps against the map, not OverlayRegion.
+        Omit onDirections → NavBridge startRoutingForPlace.
+        PlaceSummaryCard yields for the whole routing session (draft → arrived).
+      */}
+      {!listOpen && selected ? (
+        <PlaceSummaryCard
+          place={selected}
+          onViewDetails={() => {
+            console.log('view details', selected.id);
+          }}
+          viewDetailsLabel='View Details'
+          showExtendedDetails={true}
+        />
+      ) : null}
+
+      {/*
+        open is discover-side only; ListView.Carousel also yields during
+        route preview/live (web startClicked equivalent).
+      */}
+      <ListView.Carousel
+        open={!listOpen && !selected}
+        onItemPress={onSelectPlace}
+        onFavoritePress={(place, favorited) => {
+          console.log('favorite', place.id, favorited);
+        }}
+      />
+    </>
+  );
+}
+
+/**
+ * Renders the map, so it reads only stable bridge actions and the nav phase.
+ * Anything that reads bridge state or layout insets lives in a child above.
+ */
 function MapChrome() {
   const theme = useAppTheme();
-  const safeInsets = useSafeAreaInsets();
-  const {selected, select} = useMapBridge();
-  const nav = useNavBridgeOptional();
-  const showListMapToggle = isListMapToggleVisible(nav?.phase);
+  const {select} = useMapBridgeActions();
+  // Select only `phase`: this component renders the map, so it must not re-render on live HUD ticks.
+  const navPhase = useNavBridgeSelectorOptional(s => s.phase);
+  const showListMapToggle = isListMapToggleVisible(navPhase);
 
   const [listOpen, setListOpen] = useState(false);
 
@@ -118,34 +207,7 @@ function MapChrome() {
         <MapExperience.Wayfinding />
 
         <MapExperience.TopRegion>
-          <View
-            style={[
-              styles.stickyHeader,
-              {
-                paddingTop: safeInsets.top + 8,
-                backgroundColor: theme.surface.topbar,
-                borderBottomColor: theme.border.subtle,
-              },
-            ]}
-          >
-            <SearchBar
-              showResults={!listOpen}
-              resultsProps={{
-                onPress: onSelectPlace,
-              }}
-              styles={{
-                // Custom style override test code only
-                results: {backgroundColor: 'skyblue'}, 
-                field: {
-                  borderCurve: 'continuous',
-                  borderWidth: 2,
-                  borderColor: 'skyblue',
-                },
-              }}
-            />
-            {/* categories/onPress omitted → PlaceCatalog what-taxonomies */}
-            <CategoryChips/>
-          </View>
+          <StickyHeader listOpen={listOpen} onSelectPlace={onSelectPlace} />
         </MapExperience.TopRegion>
 
         {!listOpen ? (
@@ -177,26 +239,7 @@ function MapChrome() {
           <FloorChangeBanner />
         </MapExperience.OverlayRegion>
 
-        {/*
-          Chrome sibling so the sheet snaps against the map, not OverlayRegion.
-          Omit onDirections → NavBridge startRoutingForPlace.
-          PlaceSummaryCard yields for the whole routing session (draft → arrived).
-        */}
-        {!listOpen && selected ? (
-          <PlaceSummaryCard place={selected} />
-        ) : null}
-
-        {/*
-          open is discover-side only; ListView.Carousel also yields during
-          route preview/live (web startClicked equivalent).
-        */}
-        <ListView.Carousel
-          open={!listOpen && !selected}
-          onItemPress={onSelectPlace}
-          onFavoritePress={(place, favorited) => {
-            console.log('favorite', place.id, favorited);
-          }}
-        />
+        <SelectionSurfaces listOpen={listOpen} onSelectPlace={onSelectPlace} />
 
         <ListView.Browse
           open={listOpen}
