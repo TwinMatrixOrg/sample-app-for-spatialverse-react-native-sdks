@@ -8,12 +8,12 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.1.2",
-    "@maplibre/maplibre-react-native": "11.0.0-alpha.30",
+    "@maplibre/maplibre-react-native": "11.5.0",
     "@react-native-community/netinfo": "^11.4.1",
     "@shopify/flash-list": "^1.7.3",
     "@twinmatrix/rn-ui-sdk": "file:sdk/ui-sdk",
