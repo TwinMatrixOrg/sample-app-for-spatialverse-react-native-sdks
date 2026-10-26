@@ -1225,7 +1225,7 @@
   dependencies:
     node-forge "^1.3.3"
 
-"@expo/config-plugins@>=54.0.0", "@expo/config-plugins@~54.0.5":
+"@expo/config-plugins@~54.0.5":
   version "54.0.5"
   resolved "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-54.0.5.tgz"
   integrity sha512-aWQ3sViNRoQWw6So4A2qhWCt24CuGBK6MrRHI1AG+V6/NQAjIZCHaSvcXK2gXKpmisRhTSUWaKPIgLJQFB+AeQ==
@@ -1816,15 +1816,38 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@maplibre/maplibre-react-native@11.0.0-alpha.30":
-  version "11.0.0-alpha.30"
-  resolved "https://registry.npmjs.org/@maplibre/maplibre-react-native/-/maplibre-react-native-11.0.0-alpha.30.tgz"
-  integrity sha512-wCt99/FaP7pTawz49grjcAfEVo6+pOcjqgjxLeRbx0/fJhPeQ7pxdbYNZvJe3wZu7PHVrKoPbOPuVyXasbF2Sw==
+"@mapbox/jsonlint-lines-primitives@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@mapbox/jsonlint-lines-primitives/-/jsonlint-lines-primitives-2.0.3.tgz"
+  integrity sha512-0SElaV0uMxEnxzBhhX9WTuPyUeMsAN/SS0i16tjuba4/mio63MG9khjC1a0JAiPGXAwvwm4UfHJURCN7nyudQg==
+
+"@mapbox/unitbezier@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@mapbox/unitbezier/-/unitbezier-1.0.0.tgz"
+  integrity sha512-fqd515fjBmANKGGsQ286E2Wvj/XvDFpGzwJxq4CI6jMQue6Oy04uCKp+JWKF00xRTmk6cEu1jPJ9p3xqH8YWqQ==
+
+"@maplibre/maplibre-gl-style-spec@26.2.1":
+  version "26.2.1"
+  resolved "https://registry.npmjs.org/@maplibre/maplibre-gl-style-spec/-/maplibre-gl-style-spec-26.2.1.tgz"
+  integrity sha512-QFKCXkOeSzOr8jF75jm6kySOg+dUvOehPhRi68gcOYPHb7U5JloUq0dJW0Y5/fZV8ygfT0Vp2RWodvq+fyxFWA==
   dependencies:
-    "@turf/distance" "^7.1.0"
-    "@turf/helpers" "^7.1.0"
-    "@turf/length" "^7.1.0"
-    "@turf/nearest-point-on-line" "^7.1.0"
+    "@mapbox/jsonlint-lines-primitives" "^2.0.3"
+    "@mapbox/unitbezier" "^1.0.0"
+    json-stringify-pretty-compact "^4.0.0"
+    minimist "^1.2.8"
+    quickselect "^3.0.0"
+    tinyqueue "^3.0.0"
+
+"@maplibre/maplibre-react-native@^11.5.0", "@maplibre/maplibre-react-native@11.5.0":
+  version "11.5.0"
+  resolved "https://registry.npmjs.org/@maplibre/maplibre-react-native/-/maplibre-react-native-11.5.0.tgz"
+  integrity sha512-O+iDUY+nrPjT5CHCIwOheJDzKpFhUmQ4Rn9x4mYud4MubVTo5y82nxTII3LVIlbzP1L1fYqFfh4+Umr7UmYFOw==
+  dependencies:
+    "@maplibre/maplibre-gl-style-spec" "26.2.1"
+    "@turf/distance" "^7.4.0"
+    "@turf/helpers" "^7.4.0"
+    "@turf/length" "^7.4.0"
+    "@turf/nearest-point-on-line" "^7.4.0"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
@@ -2345,13 +2368,13 @@
     "@turf/helpers" "^6.5.0"
     "@turf/invariant" "^6.5.0"
 
-"@turf/distance@^7.1.0", "@turf/distance@7.3.5":
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/@turf/distance/-/distance-7.3.5.tgz"
-  integrity sha512-uQAC63zg/l91KUxzfhqio7Ii3+UXTrPOVJScIdRj6EO6+9XHI4kC+AdyIS4cPAv14sZfJLIBxzMnzcGrss+kEA==
+"@turf/distance@^7.4.0", "@turf/distance@7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@turf/distance/-/distance-7.4.0.tgz"
+  integrity sha512-ODkopQDG1m/U6Mx7OMmShncaCvneomwX3lZY1CDA7x40bhDdTTRYP/n/6LicZVyIO4/oK+aXkov4NOtWYthA2g==
   dependencies:
-    "@turf/helpers" "7.3.5"
-    "@turf/invariant" "7.3.5"
+    "@turf/helpers" "7.4.0"
+    "@turf/invariant" "7.4.0"
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
 
@@ -2368,10 +2391,10 @@
   resolved "https://registry.npmjs.org/@turf/helpers/-/helpers-6.5.0.tgz"
   integrity sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw==
 
-"@turf/helpers@^7.1.0", "@turf/helpers@7.3.5":
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/@turf/helpers/-/helpers-7.3.5.tgz"
-  integrity sha512-E/NMGV5MwbjjP7AJXBtsanC3yY8N2MQ87IGdIgkB2ji5AtBpwnH4L3gEqpYN4RlCJJWbLbzO91BbKv2waUd0eg==
+"@turf/helpers@^7.4.0", "@turf/helpers@7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@turf/helpers/-/helpers-7.4.0.tgz"
+  integrity sha512-7PAwLZqOdRzTI5g9bHvUwlloAXPDH/mlajtryk0tw4ZwGMtmXsAyF4QundsAMfy4u48Fyd3AUqMXY0SMxqJGWg==
   dependencies:
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
@@ -2383,23 +2406,23 @@
   dependencies:
     "@turf/helpers" "^6.5.0"
 
-"@turf/invariant@7.3.5":
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/@turf/invariant/-/invariant-7.3.5.tgz"
-  integrity sha512-ZVIvsBvjr8lO7WxC5zYNjRsjSDvyGvWkJMjuWaJjTU8x+1tmfNnw3gDX/TI2Sit83gcRYLYkNo23lB/udqx/Hg==
+"@turf/invariant@7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@turf/invariant/-/invariant-7.4.0.tgz"
+  integrity sha512-OAsc3qdNx+tRqzWmMNFMnVlWWACIqnYqIejZKvb2oKkKPYJJrURPXZ6OdrGD58ljJMolLoqwIZGSx3VndaEjxg==
   dependencies:
-    "@turf/helpers" "7.3.5"
+    "@turf/helpers" "7.4.0"
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
 
-"@turf/length@^7.1.0":
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/@turf/length/-/length-7.3.5.tgz"
-  integrity sha512-Bi+vEP54wt1ly3BRcCOP0nd2kGTYEhGk6haQxTpkrqr3XtmqDh8c3NowSgseN2cegIZRjwCOEC8eSsZ0JemJdA==
+"@turf/length@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@turf/length/-/length-7.4.0.tgz"
+  integrity sha512-vQsJLuL7uy8m6HAMuJJKoiOHYY1de1Hd6mY/fM90qfu2RyIrkoF8J4bRUb72XZNCVnvob/eHpUMdhZeoUhSyfQ==
   dependencies:
-    "@turf/distance" "7.3.5"
-    "@turf/helpers" "7.3.5"
-    "@turf/meta" "7.3.5"
+    "@turf/distance" "7.4.0"
+    "@turf/helpers" "7.4.0"
+    "@turf/meta" "7.4.0"
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
 
@@ -2465,12 +2488,12 @@
   dependencies:
     "@turf/helpers" "^6.5.0"
 
-"@turf/meta@7.3.5":
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/@turf/meta/-/meta-7.3.5.tgz"
-  integrity sha512-r+ohqxoyqeigFB0oFrQx/YEHIkOKqcKpCjvZkvZs7Tkv+IFco5MezAd2zd4rzK+0DfFgDP3KpJc7HqrYjvEjhg==
+"@turf/meta@7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@turf/meta/-/meta-7.4.0.tgz"
+  integrity sha512-3cLUvlEyDuSnMSzrjhaLAEiYR8xhbfWyTVQlrlEw40xL81d4KF4PqUWbjTXKpXZStdYbet2GCurl79KMypNw6g==
   dependencies:
-    "@turf/helpers" "7.3.5"
+    "@turf/helpers" "7.4.0"
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
 
@@ -2487,15 +2510,15 @@
     "@turf/line-intersect" "^6.5.0"
     "@turf/meta" "^6.5.0"
 
-"@turf/nearest-point-on-line@^7.1.0":
-  version "7.3.5"
-  resolved "https://registry.npmjs.org/@turf/nearest-point-on-line/-/nearest-point-on-line-7.3.5.tgz"
-  integrity sha512-MZn6OkEFZpjS6BNUANfqiHMIbQSivu7TNji3a+OAIrnPJ71vp8cbz0N2aVEa5M7I8ipvxoxAPIV3eqg3h280Vg==
+"@turf/nearest-point-on-line@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/@turf/nearest-point-on-line/-/nearest-point-on-line-7.4.0.tgz"
+  integrity sha512-eKTKf/qODIsPankYMZrNfI3LjLaVtQvYV/1hcj9kH/Zr3GfLUszevjhTRDZtMgTFrv8+awW3+MyhmN+PJGuLdQ==
   dependencies:
-    "@turf/distance" "7.3.5"
-    "@turf/helpers" "7.3.5"
-    "@turf/invariant" "7.3.5"
-    "@turf/meta" "7.3.5"
+    "@turf/distance" "7.4.0"
+    "@turf/helpers" "7.4.0"
+    "@turf/invariant" "7.4.0"
+    "@turf/meta" "7.4.0"
     "@types/geojson" "^7946.0.10"
     tslib "^2.8.1"
 
@@ -2566,10 +2589,10 @@
     "@turf/buffer" "^6.5.0"
     "@turf/helpers" "^6.5.0"
 
-"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.7":
-  version "0.2.7"
-  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.7.tgz"
-  integrity sha512-wA2lBy0vd4yF1UYA1e33EJqNwnWc4TdREsVLDqBQQRPrEFGG4Gp84mj0Zy8UaKkxKzCQldLiZOIxoLlsOlulWw==
+"@twinmatrix/spatialverse-sdk-rn@*", "@twinmatrix/spatialverse-sdk-rn@0.2.8":
+  version "0.2.8"
+  resolved "https://registry.npmjs.org/@twinmatrix/spatialverse-sdk-rn/-/spatialverse-sdk-rn-0.2.8.tgz"
+  integrity sha512-PxRhDZAsoe0yINYXLTE1eCrYOoNz/U2B8gzRRJteMgt/WBM8ohf0vnfUAaA27D+x/w7dGzqBgdvF4cQHwKxgAA==
   dependencies:
     "@dagrejs/graphlib" "^2.2.4"
     "@turf/along" "6.5.0"
@@ -4571,7 +4594,7 @@ expo-server@^1.0.7:
   resolved "https://registry.npmjs.org/expo-server/-/expo-server-1.0.7.tgz"
   integrity sha512-mcmyML3oXcqFUXUxtdtCL1O00ztNI2v76d+MdniXRUgHNxIcHZ05zo+DqBaOOT6LQnPk4vA4YHqQl7iGUfRb3g==
 
-expo@*, expo@~54.0.0:
+expo@*, expo@>=54.0.0, expo@~54.0.0:
   version "54.0.37"
   resolved "https://registry.npmjs.org/expo/-/expo-54.0.37.tgz"
   integrity sha512-afzbtO4i/K9ZCrzyLgEOaXW56w/yuAK61JkCOMrw/S/VFCAp6YwKWA494X5mIcrVmRAmclv/ec7ga8ndTkzhxw==
@@ -5945,6 +5968,11 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
+json-stringify-pretty-compact@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/json-stringify-pretty-compact/-/json-stringify-pretty-compact-4.0.0.tgz"
+  integrity sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==
+
 json5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/json5/-/json5-2.2.3.tgz"
@@ -6649,7 +6677,7 @@ minimatch@^9.0.0, minimatch@^9.0.4:
   dependencies:
     brace-expansion "^2.0.2"
 
-minimist@^1.2.0:
+minimist@^1.2.0, minimist@^1.2.8:
   version "1.2.8"
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
@@ -7267,6 +7295,11 @@ quickselect@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/quickselect/-/quickselect-2.0.0.tgz"
   integrity sha512-RKJ22hX8mHe3Y6wH/N3wCM6BWtjaxIyyUIkpHOvfFnxdI4yD4tBXEBKSbriGujF6jnSVkJrffuo6vxACiSSxIw==
+
+quickselect@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/quickselect/-/quickselect-3.0.0.tgz"
+  integrity sha512-XdjUArbK4Bm5fLLvlm5KpTFOiOThgfWWI4axAZDWg4E/0mKdZyI9tNEfds27qCi1ze/vwTR16kvmmGhRra3c2g==
 
 range-parser@~1.2.1:
   version "1.2.1"
@@ -8279,6 +8312,11 @@ tinyqueue@^2.0.3:
   version "2.0.3"
   resolved "https://registry.npmjs.org/tinyqueue/-/tinyqueue-2.0.3.tgz"
   integrity sha512-ppJZNDuKGgxzkHihX8v9v9G5f+18gzaTfrukGrq6ueg0lmH4nqVnA2IPG0AEH3jKEk2GRJCUhDoqpoiw3PHLBA==
+
+tinyqueue@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/tinyqueue/-/tinyqueue-3.0.0.tgz"
+  integrity sha512-gRa9gwYU3ECmQYv3lslts5hxuIa90veaEcxDYuu3QGOIAEM2mOZkVHp48ANJuu1CURtRdHKUBY5Lm1tHV+sD4g==
 
 tmpl@1.0.5:
   version "1.0.5"
