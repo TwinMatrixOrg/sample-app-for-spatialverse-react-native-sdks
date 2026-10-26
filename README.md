@@ -1,6 +1,6 @@
 # Sample App — SpatialVerse React Native SDKs
 
-This branch is the sample app for `@twinmatrix/rn-ui-sdk` **0.2.2**.
+This branch is the sample app for `@twinmatrix/rn-ui-sdk` **0.2.3**.
 
 Reference React Native host for:
 
